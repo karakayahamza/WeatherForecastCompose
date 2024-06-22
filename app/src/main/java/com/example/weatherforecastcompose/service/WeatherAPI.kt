@@ -11,7 +11,7 @@ interface WeatherAPI {
         @Query("q") name: String?,
         @Query("APPID") appId: String?,
         @Query("units") units: String?
-    ): Observable<Root>
+    ): Root
 }
 
 //api.openweathermap.org/data/2.5/forecast?q={city name}&appid={API key}
