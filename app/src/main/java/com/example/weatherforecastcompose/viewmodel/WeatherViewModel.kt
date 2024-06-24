@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.weatherforecastcompose.model.Root
+import com.example.weatherforecastcompose.model.WeatheModel
 import com.example.weatherforecastcompose.repository.WeatherRepository
 import com.example.weatherforecastcompose.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,7 +18,7 @@ class WeatherViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    var weather = mutableStateOf<Root?>(null)
+    var weather = mutableStateOf<WeatheModel?>(null)
     var errorMessage = mutableStateOf("")
     var isLoading = mutableStateOf(false)
 
@@ -34,6 +35,7 @@ class WeatherViewModel @Inject constructor(
                     val weatherData = result.data
                     if (weatherData != null) {
                         weather.value = weatherData
+                        //println(weather.value!!.city)
                     }
                     errorMessage.value = ""
                     isLoading.value = false
@@ -43,7 +45,7 @@ class WeatherViewModel @Inject constructor(
                     isLoading.value = false
                 }
                 is Resource.Loading -> {
-                    errorMessage.value = ""
+                    errorMessage.value = "Loading"
                 }
             }
         }

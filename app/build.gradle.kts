@@ -61,24 +61,20 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+//    implementation(libs.androidx.foundation.desktop)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-//    implementation(libs.hilt.android)
-//    kapt(libs.hilt.android.compiler)
-
-    //Dagger - Hilt
-    implementation (libs.hilt.android)
-    kapt (libs.hilt.android.compiler)
-    kapt (libs.androidx.hilt.compiler)
-    implementation (libs.androidx.hilt.navigation.compose)
-    implementation (libs.androidx.hilt.work)
-    implementation (libs.androidx.work.runtime.ktx)
+    // Dagger - Hilt
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.android.compiler)
+    implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.androidx.hilt.work)
+    implementation(libs.androidx.work.runtime.ktx)
 
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
@@ -92,18 +88,18 @@ dependencies {
     // Coil
     implementation(libs.coil.compose)
 
-    implementation (libs.retrofit.v290)
-    implementation (libs.converter.gson)
-    implementation (libs.adapter.rxjava2)
-    implementation (libs.rxjava)
-    implementation (libs.rxandroid)
+    implementation(libs.retrofit.v290)
+    implementation(libs.converter.gson)
+    implementation(libs.adapter.rxjava2)
+    implementation(libs.rxjava)
+    implementation(libs.rxandroid)
 
-    implementation (libs.kotlinx.coroutines.core)
-    implementation (libs.kotlinx.coroutines.android)
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
 
 }
 
-//// Allow references to generated code
-//kapt {
-//    correctErrorTypes = true
-//}
+// Allow references to generated code
+kapt {
+    correctErrorTypes = true
+}
