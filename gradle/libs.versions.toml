@@ -25,6 +25,7 @@ retrofit = "(insert latest version)"
 retrofitVersion = "2.9.0"
 rxandroid = "2.1.1"
 rxjava = "2.2.21"
+viewpager2 = "1.1.0"
 workRuntimeKtx = "2.9.0"
 workRuntimeKtxVersion = "2.9.0"
 foundationDesktop = "1.6.8"
@@ -39,6 +40,7 @@ androidx-navigation-compose = { module = "androidx.navigation:navigation-compose
 androidx-navigation-fragment-ktx = { module = "androidx.navigation:navigation-fragment-ktx", version.ref = "navigationFragmentKtx" }
 androidx-navigation-testing = { module = "androidx.navigation:navigation-testing", version.ref = "navigationFragmentKtx" }
 androidx-navigation-ui-ktx = { module = "androidx.navigation:navigation-ui-ktx", version.ref = "navigationFragmentKtx" }
+androidx-viewpager2 = { module = "androidx.viewpager2:viewpager2", version.ref = "viewpager2" }
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workRuntimeKtxVersion" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }

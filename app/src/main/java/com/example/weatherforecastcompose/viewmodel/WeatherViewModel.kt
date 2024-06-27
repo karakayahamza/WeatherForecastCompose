@@ -1,5 +1,6 @@
 package com.example.weatherforecastcompose.viewmodel
 
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -18,9 +19,17 @@ class WeatherViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
+    var selectedCities = mutableStateListOf<String>()
+        private set
+
     var weather = mutableStateOf<WeatheModel?>(null)
+        private set
+
     var errorMessage = mutableStateOf("")
+        private set
+
     var isLoading = mutableStateOf(false)
+        private set
 
     init {
         val name: String = savedStateHandle["name"] ?: "DefaultCityName"
@@ -28,6 +37,7 @@ class WeatherViewModel @Inject constructor(
     }
 
     fun loadWeather(name: String) {
+        println("Name: $name")
         viewModelScope.launch {
             isLoading.value = true
             when(val result = repository.getWeatherList(name)) {
@@ -35,7 +45,6 @@ class WeatherViewModel @Inject constructor(
                     val weatherData = result.data
                     if (weatherData != null) {
                         weather.value = weatherData
-                        //println(weather.value!!.city)
                     }
                     errorMessage.value = ""
                     isLoading.value = false
@@ -49,5 +58,15 @@ class WeatherViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun addCity(city: String) {
+        if (!selectedCities.contains(city)) {
+            selectedCities.add(city)
+        }
+    }
+
+    fun removeCity(city: String) {
+        selectedCities.remove(city)
     }
 }

@@ -97,6 +97,8 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
 
+    implementation (libs.androidx.viewpager2)
+
 }
 
 // Allow references to generated code
