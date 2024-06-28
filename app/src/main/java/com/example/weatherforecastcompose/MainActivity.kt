@@ -2,32 +2,44 @@ package com.example.weatherforecastcompose
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.annotation.DrawableRes
+import androidx.annotation.RequiresApi
+import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerValue
@@ -36,44 +48,41 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarColors
-import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.rememberDrawerState
-import androidx.compose.material3.rememberTopAppBarState
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.isSpecified
+import androidx.compose.ui.graphics.isUnspecified
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
+import com.example.compose.WeatherForecastComposeTheme
 import com.example.weatherforecastcompose.model.Root
-import com.example.weatherforecastcompose.ui.theme.WeatherForecastComposeTheme
 import com.example.weatherforecastcompose.viewmodel.WeatherViewModel
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
@@ -84,17 +93,18 @@ import java.io.IOException
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
-import java.util.*
-import kotlin.math.roundToInt
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+    @RequiresApi(Build.VERSION_CODES.S)
+    @OptIn(ExperimentalFoundationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             WeatherForecastComposeTheme {
+
                 val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
                 val scope = rememberCoroutineScope()
                 var searchQuery by remember { mutableStateOf("") }
@@ -104,11 +114,6 @@ class MainActivity : ComponentActivity() {
 
                 // Load previously selected cities from SharedPreferences
                 selectedCities.addAll(loadSelectedCities(context))
-
-                // Filtered city names based on search query
-                val filteredCityNames = remember(searchQuery) {
-                    cityNames.filter { it.contains(searchQuery, ignoreCase = true) }
-                }
 
                 ModalNavigationDrawer(
                     drawerContent = {
@@ -130,9 +135,20 @@ class MainActivity : ComponentActivity() {
                             Spacer(modifier = Modifier.height(16.dp))
 
                             LazyColumn {
-                                items(filteredCityNames) { cityName ->
+                                // Show selected cities regardless of search query
+                                items(selectedCities) { cityName ->
                                     CityCheckbox(cityName, selectedCities, context = context)
                                     HorizontalDivider(color = Color.Gray)
+                                }
+
+                                // Show filtered cities based on search query
+                                if (searchQuery.isNotEmpty()) {
+                                    items(cityNames.filter { it.contains(searchQuery, ignoreCase = true) }) { cityName ->
+                                        if (!selectedCities.contains(cityName)) {
+                                            CityCheckbox(cityName, selectedCities, context = context)
+                                            HorizontalDivider(color = Color.Gray)
+                                        }
+                                    }
                                 }
                             }
 
@@ -140,67 +156,64 @@ class MainActivity : ComponentActivity() {
                         }
                     }, drawerState = drawerState
                 ) {
+                    val pagerState = rememberPagerState(pageCount = { selectedCities.size })
+
                     Scaffold(
+                        topBar = {
+                            TopAppBar(
+                                title = {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Spacer(modifier = Modifier.weight(1f))
 
-                        content = { paddingValues ->
-                            Column(modifier = Modifier.padding(paddingValues)) {
+                                        Box(
+                                            modifier = Modifier.weight(1f)
+                                        ) {
+                                            DotIndicator(
+                                                pagerState = pagerState,
+                                                modifier = Modifier.align(Alignment.Center)
+                                            )
+                                        }
 
-                                val iconState = remember { mutableStateOf(false) }
+                                        Box(
+                                            modifier = Modifier.weight(1f),
+                                            contentAlignment = Alignment.CenterEnd
+                                        ) {
+                                            val iconState = remember { mutableStateOf(false) }
 
-                                // Bileşenleri yerleştir
-                                AnimatedMenuButton(
-                                    isOpen = drawerState.isOpen,
-                                    onToggle = { iconState.value = !iconState.value
-                                        scope.launch {
-                                            if (drawerState.isOpen) {
-                                                drawerState.close()
-                                            } else {
-                                                drawerState.open()
-                                            }
+                                            AnimatedMenuButton(
+                                                isOpen = drawerState.isOpen,
+                                                onToggle = {
+                                                    iconState.value = !iconState.value
+                                                    scope.launch {
+                                                        if (drawerState.isOpen) {
+                                                            drawerState.close()
+                                                        } else {
+                                                            drawerState.open()
+                                                        }
+                                                    }
+                                                }
+                                            )
                                         }
                                     }
-                                )
-
-
+                                },
+                            )
+                        },
+                        content = { paddingValues ->
+                            Column(modifier = Modifier.padding(paddingValues)) {
                                 WeatherList(
                                     viewModel = hiltViewModel(),
                                     selectedCities = selectedCities,
+                                    pagerState = pagerState
                                 )
                             }
                         }
                     )
-
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun AnimatedMenuButton(
-    isOpen: Boolean,
-    onToggle: () -> Unit,
-    modifier: Modifier = Modifier,
-    iconSize: Dp = Dp.Unspecified
-) {
-    val rotation by animateFloatAsState(
-        targetValue = if (isOpen) 180f else 0f,
-        animationSpec = tween(durationMillis = 300)
-    )
-
-    val icon: ImageVector = if (isOpen) Icons.Default.ArrowBack else Icons.Default.Menu
-    val contentDescription: String = if (isOpen) "Back" else "Menu"
-
-    IconButton(
-        onClick = { onToggle() },
-        modifier = modifier.padding(8.dp)
-    ) {
-        Box {
-            Icon(
-                imageVector = icon,
-                contentDescription = contentDescription,
-                modifier = Modifier.rotate(rotation)
-            )
         }
     }
 }
@@ -208,12 +221,55 @@ fun AnimatedMenuButton(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
+fun DotIndicator(
+    pagerState: PagerState,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        repeat(pagerState.pageCount) { pageIndex ->
+            Box(
+                modifier = Modifier
+                    .size(8.dp)
+                    .clip(CircleShape)
+                    .background(
+                        if (pageIndex == pagerState.currentPage) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onPrimary
+                    )
+                    .padding(horizontal = 2.dp)
+            )
+            Spacer(modifier = Modifier.size(10.dp))
+        }
+    }
+}
+
+
+@Composable
+fun AnimatedMenuButton(isOpen: Boolean, onToggle: () -> Unit) {
+    val transitionSpec = tween<Float>(durationMillis = 100, easing = LinearOutSlowInEasing)
+
+    val rotationAngle by animateFloatAsState(
+        targetValue = if (isOpen) 90f else 0f,
+        animationSpec = transitionSpec
+    )
+
+    IconButton(onClick = onToggle) {
+        Icon(
+            imageVector = if (isOpen) Icons.Default.Close else Icons.Default.Menu,
+            contentDescription = if (isOpen) "Close menu" else "Open menu",
+            modifier = Modifier.graphicsLayer(rotationZ = rotationAngle)
+        )
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
 fun WeatherList(
     viewModel: WeatherViewModel = hiltViewModel(),
-    selectedCities: List<String>
+    selectedCities: List<String>,
+    pagerState: PagerState
 ) {
-    val pagerState = rememberPagerState(pageCount = { selectedCities.size })
-
     HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) { page ->
         val cityName = selectedCities[page]
 
@@ -241,26 +297,25 @@ fun WeatherList(
                     CircularProgressIndicator()
                 }
             }
-            errorMessageState.isNotEmpty() -> {
-                // Hata durumunda tekrar deneme butonu göster
-                RetryView(error = errorMessageState) {
-                    viewModel.loadWeather(cityName)
-                }
-            }
+
+//            errorMessageState.isNotEmpty() -> {
+//                // Hata durumunda tekrar deneme butonu göster
+//                RetryView(error = errorMessageState) {
+//                    viewModel.loadWeather(cityName)
+//                }
+//            }
+
             weatherState != null -> {
                 // Veri yüklendiğinde hava durumu UI'ı göster
                 WeatherUI(cityName, weatherState.list.firstOrNull()?.main?.temp, weatherState.list)
             }
+
             else -> {
                 // Durum belirsizse bir şey yapma
             }
         }
     }
 }
-
-
-
-
 
 
 @Composable
@@ -308,19 +363,19 @@ fun WeatherUI(city: String, currentTemp: Double?, forecast: List<Root>?) {
         }@2x.png"
     )
 
-    val humidityResource: Painter = if (MaterialTheme.colorScheme.primary.isSpecified) {
+    val humidityResource: Painter = if (isSystemInDarkTheme()) {
         painterResource(id = R.drawable.humidity_light)
     } else {
         painterResource(id = R.drawable.humidity_dark)
     }
 
-    val windResource: Painter = if (MaterialTheme.colorScheme.primary.isSpecified) {
+    val windResource: Painter = if (isSystemInDarkTheme()) {
         painterResource(id = R.drawable.wind_light)
     } else {
         painterResource(id = R.drawable.wind_dark)
     }
 
-    val pressureResource: Painter = if (MaterialTheme.colorScheme.primary.isSpecified) {
+    val pressureResource: Painter = if (isSystemInDarkTheme()) {
         painterResource(id = R.drawable.pressure_light)
     } else {
         painterResource(id = R.drawable.pressure_dark)
@@ -349,13 +404,13 @@ fun WeatherUI(city: String, currentTemp: Double?, forecast: List<Root>?) {
             ) {
                 Text(
                     text = city,
-                    fontSize = if (city.length > 20 || city.contains(" ")) 30.sp else 45.sp,
+                    fontSize = 30.sp, // Font boyutunu sabit tutuyoruz
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 16.dp),
                     textAlign = TextAlign.Center,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
+                    maxLines = 2, // Maksimum 2 satır olarak ayarlıyoruz
+                    overflow = TextOverflow.Ellipsis // Taşarsa üç nokta ile gösterir
                 )
 
                 Box(
@@ -524,9 +579,7 @@ fun WeatherUI(city: String, currentTemp: Double?, forecast: List<Root>?) {
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
-    WeatherForecastComposeTheme {
-        // MainScreen()
-    }
+
 }
 
 @Composable
@@ -567,7 +620,7 @@ fun CityCheckbox(city: String, selectedCities: MutableList<String>, context: Con
 
 fun saveSelectedCities(selectedCities: List<String>, context: Context) {
 
-    for (i in selectedCities){
+    for (i in selectedCities) {
         println("SelectedCities: $i")
     }
 
