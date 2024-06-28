@@ -1,5 +1,6 @@
 package com.example.weatherforecastcompose.viewmodel
 
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
@@ -15,58 +16,53 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WeatherViewModel @Inject constructor(
-    private val repository: WeatherRepository,
-    private val savedStateHandle: SavedStateHandle
+    private val repository: WeatherRepository
 ) : ViewModel() {
 
-    var selectedCities = mutableStateListOf<String>()
-        private set
+    private var _selectedCities = mutableStateListOf<String>()
+    val selectedCities: List<String> get() = _selectedCities
 
-    var weather = mutableStateOf<WeatheModel?>(null)
-        private set
+    private var _weather = mutableStateOf<WeatheModel?>(null)
+    val weather: State<WeatheModel?> get() = _weather
 
-    var errorMessage = mutableStateOf("")
-        private set
+    private var _errorMessage = mutableStateOf("")
+    val errorMessage: State<String> get() = _errorMessage
 
-    var isLoading = mutableStateOf(false)
-        private set
+    private var _isLoading = mutableStateOf(false)
+    val isLoading: State<Boolean> get() = _isLoading
 
     init {
-        val name: String = savedStateHandle["name"] ?: "DefaultCityName"
-        loadWeather(name)
+        // Default bir şehir yükleyebilirsiniz (örneğin ilk seçili şehir)
+        _selectedCities.add("DefaultCityName")
+        loadWeather(_selectedCities.first())
     }
 
-    fun loadWeather(name: String) {
-        println("Name: $name")
+    fun loadWeather(cityName: String) {
         viewModelScope.launch {
-            isLoading.value = true
-            when(val result = repository.getWeatherList(name)) {
+            _isLoading.value = true
+            when (val result = repository.getWeatherList(cityName)) {
                 is Resource.Success -> {
-                    val weatherData = result.data
-                    if (weatherData != null) {
-                        weather.value = weatherData
-                    }
-                    errorMessage.value = ""
-                    isLoading.value = false
+                    _weather.value = result.data
+                    _errorMessage.value = ""
                 }
                 is Resource.Error -> {
-                    errorMessage.value = result.message ?: "Unknown error"
-                    isLoading.value = false
+                    _errorMessage.value = result.message ?: "Unknown error"
                 }
                 is Resource.Loading -> {
-                    errorMessage.value = "Loading"
+                    // Burada gerekirse Loading durumuyla ilgili bir şey yapılabilir
                 }
             }
+            _isLoading.value = false
         }
     }
 
     fun addCity(city: String) {
-        if (!selectedCities.contains(city)) {
-            selectedCities.add(city)
+        if (!_selectedCities.contains(city)) {
+            _selectedCities.add(city)
         }
     }
 
     fun removeCity(city: String) {
-        selectedCities.remove(city)
+        _selectedCities.remove(city)
     }
 }
