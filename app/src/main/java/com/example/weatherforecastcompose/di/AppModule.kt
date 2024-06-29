@@ -25,7 +25,7 @@ class AppModule {
 
     @Singleton
     @Provides
-    fun provideCryptoApi(): WeatherAPI {
+    fun provideWeatherApi(): WeatherAPI {
         return Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create())
             .baseUrl(BASE_URL)

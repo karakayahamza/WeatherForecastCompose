@@ -7,6 +7,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -37,6 +38,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -54,7 +56,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -67,11 +68,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.isSpecified
-import androidx.compose.ui.graphics.isUnspecified
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -82,6 +82,8 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
 import com.example.compose.WeatherForecastComposeTheme
+import com.example.compose.max_Temp
+import com.example.compose.min_Temp
 import com.example.weatherforecastcompose.model.Root
 import com.example.weatherforecastcompose.viewmodel.WeatherViewModel
 import com.google.gson.Gson
@@ -143,9 +145,18 @@ class MainActivity : ComponentActivity() {
 
                                 // Show filtered cities based on search query
                                 if (searchQuery.isNotEmpty()) {
-                                    items(cityNames.filter { it.contains(searchQuery, ignoreCase = true) }) { cityName ->
+                                    items(cityNames.filter {
+                                        it.contains(
+                                            searchQuery,
+                                            ignoreCase = true
+                                        )
+                                    }) { cityName ->
                                         if (!selectedCities.contains(cityName)) {
-                                            CityCheckbox(cityName, selectedCities, context = context)
+                                            CityCheckbox(
+                                                cityName,
+                                                selectedCities,
+                                                context = context
+                                            )
                                             HorizontalDivider(color = Color.Gray)
                                         }
                                     }
@@ -270,72 +281,87 @@ fun WeatherList(
     selectedCities: List<String>,
     pagerState: PagerState
 ) {
-    HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) { page ->
-        val cityName = selectedCities[page]
-
-        // ViewModel'den veri yükleme işlemi sadece gerekli durumda yapılıyor
-        LaunchedEffect(cityName) {
-            if (page == pagerState.currentPage &&
-                (viewModel.weather.value == null || viewModel.weather.value?.city?.name != cityName)
-            ) {
-                viewModel.loadWeather(cityName)
-            }
+    // En başta seçili şehir listesi boş değilse ilk sayfaya kaydır
+    LaunchedEffect(key1 = selectedCities.isNotEmpty()) {
+        if (selectedCities.isNotEmpty()) {
+            pagerState.scrollToPage(0)
         }
+    }
 
-        // ViewModel'den gelen state'leri kullanarak UI'ı oluştur
-        val weatherState = viewModel.weather.value
-        val errorMessageState = viewModel.errorMessage.value
-        val isLoadingState = viewModel.isLoading.value
-
-        when {
-            isLoadingState && weatherState == null -> {
-                // Yükleme durumunda progress göster
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
+    HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) { page ->
+        val cityName = selectedCities.getOrNull(page)
+        cityName?.let { city ->
+            // ViewModel'den veri yükleme işlemi sadece gerekli durumda yapılıyor
+            LaunchedEffect(key1 = city) {
+                if (viewModel.weatherData[city] == null) {
+                    viewModel.loadWeather(city)
                 }
             }
 
-//            errorMessageState.isNotEmpty() -> {
-//                // Hata durumunda tekrar deneme butonu göster
-//                RetryView(error = errorMessageState) {
-//                    viewModel.loadWeather(cityName)
-//                }
-//            }
+            // ViewModel'den gelen state'leri kullanarak UI'ı oluştur
+            val weatherState = viewModel.weatherData[city]
+            val errorMessageState = viewModel.errorMessages[city] ?: ""
+            val isLoadingState = viewModel.isLoading[city] ?: false
 
-            weatherState != null -> {
-                // Veri yüklendiğinde hava durumu UI'ı göster
-                WeatherUI(cityName, weatherState.list.firstOrNull()?.main?.temp, weatherState.list)
-            }
+            when {
+                isLoadingState && weatherState == null -> {
+                    // Yükleme durumunda progress göster
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                }
 
-            else -> {
-                // Durum belirsizse bir şey yapma
+                errorMessageState.isNotEmpty() -> {
+                    // Hata durumunda tekrar deneme butonu göster
+                    RetryView(error = errorMessageState) {
+                        viewModel.loadWeather(city)
+                    }
+                }
+
+                weatherState != null -> {
+                    // Veri yüklendiğinde hava durumu UI'ı göster
+                    WeatherUI(city, weatherState.list.firstOrNull()?.main?.temp, weatherState.list)
+                }
+
+                else -> {
+                    // Durum belirsizse bir şey yapma
+                }
             }
         }
     }
-}
 
+//    // Yeni bir şehir eklendiğinde HorizontalPager'ı en sona kaydır
+//    LaunchedEffect(key1 = selectedCities.size) {
+//        if (selectedCities.isNotEmpty()) {
+//            pagerState.animateScrollToPage(selectedCities.size - 1)
+//        }
+//    }
+}
 
 @Composable
-fun RetryView(
-    error: String, onRetry: () -> Unit
-) {
-    Column(
+fun RetryView(error: String, onRetry: () -> Unit) {
+    Box(
         modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        contentAlignment = Alignment.Center
     ) {
-        Text(error, color = Color.Red, fontSize = 20.sp)
-        Spacer(modifier = Modifier.height(10.dp))
-        Button(
-            onClick = { onRetry() }, modifier = Modifier.align(Alignment.CenterHorizontally)
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "Retry")
+            Text(text = error)
+            Spacer(modifier = Modifier.height(8.dp))
+            Button(onClick = onRetry) {
+                Text(text = "Retry")
+            }
         }
     }
 }
+
+
+
+
 
 @SuppressLint("DefaultLocale")
 fun formatDate(dateString: String): Pair<String, String> {
@@ -391,10 +417,12 @@ fun WeatherUI(city: String, currentTemp: Double?, forecast: List<Root>?) {
             modifier = Modifier
                 .padding(10.dp)
                 .fillMaxWidth()
-                .wrapContentHeight(unbounded = true) // Allow the card to wrap content height
+                .wrapContentHeight(unbounded = true)
                 .clip(RoundedCornerShape(16.dp))
-                .shadow(8.dp),
-        ) {
+                .shadow(8.dp)
+                .align(Alignment.CenterHorizontally),
+
+            ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -404,35 +432,98 @@ fun WeatherUI(city: String, currentTemp: Double?, forecast: List<Root>?) {
             ) {
                 Text(
                     text = city,
-                    fontSize = 30.sp, // Font boyutunu sabit tutuyoruz
+                    fontSize = 30.sp,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 16.dp),
+                        .fillMaxWidth(),
                     textAlign = TextAlign.Center,
-                    maxLines = 2, // Maksimum 2 satır olarak ayarlıyoruz
-                    overflow = TextOverflow.Ellipsis // Taşarsa üç nokta ile gösterir
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
                 )
 
-                Box(
+                Text(
+                    text = formatDate(forecast?.get(0)?.dt_txt ?: "-").first,
+                    fontSize = 12.sp,
                     modifier = Modifier
-                        .size(120.dp)
-                        .clip(CircleShape)
-                        .shadow(40.dp, CircleShape, false)
+                        .fillMaxWidth(),
+                    textAlign = TextAlign.Center,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.padding(bottom = 16.dp)
                 ) {
                     Image(
                         painter = painter,
                         contentDescription = "Weather Icon",
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier
+                            .size(78.dp)
+                            .align(Alignment.CenterHorizontally)
+                    )
+                    Text(
+                        text = forecast?.get(0)?.weather?.get(0)?.description!!.uppercase(),
+                        fontSize = 13.sp,
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally),
+                        textAlign = TextAlign.Center
                     )
                 }
 
-                // Current temperature and city name
+
                 if (currentTemp != null) {
-                    Text(
-                        text = "${currentTemp.toInt()} °C",
-                        fontSize = 42.sp,
+                    Row(
                         modifier = Modifier
-                            .fillMaxWidth()
+
+                            .padding(bottom = 16.dp)
+                    ) {
+                        Text(
+                            text = currentTemp.toInt().toString(),
+                            fontSize = 45.sp,
+
+                            textAlign = TextAlign.Center
+                        )
+
+                        Text(
+                            text = "°C",
+                            fontSize = 20.sp,
+                            modifier = Modifier
+                                .align(Alignment.Top)
+                                .padding(top = 4.dp),
+                            textAlign = TextAlign.Start
+                        )
+                    }
+                }
+
+                Text(
+                    text = "Hissedilen: ${forecast?.get(0)?.main?.feels_like} °C",
+                    fontSize = 12.sp,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp),
+                    textAlign = TextAlign.Center
+                )
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    Text(
+                        text = "${forecast?.get(0)?.main?.temp_min}°",
+                        fontSize = 21.sp,
+                        color = min_Temp,
+                        modifier = Modifier
+                            .padding(bottom = 16.dp),
+                        textAlign = TextAlign.Center
+                    )
+
+                    Text(
+                        text = "${forecast?.get(0)?.main?.temp_max}°",
+                        fontSize = 21.sp,
+                        color = max_Temp,
+                        modifier = Modifier
                             .padding(bottom = 16.dp),
                         textAlign = TextAlign.Center
                     )
@@ -461,17 +552,17 @@ fun WeatherUI(city: String, currentTemp: Double?, forecast: List<Root>?) {
                         painter = humidityResource,
                         contentDescription = "Humidity Image",
                         modifier = Modifier
-                            .size(50.dp)
+                            .size(40.dp)
                             .padding(8.dp)
                     )
                     Text(
-                        text = "${forecast?.get(0)?.main?.humidity?.toInt()}%",
-                        fontSize = 18.sp,
+                        text = "${forecast?.get(0)?.main?.humidity}%",
+                        fontSize = 14.sp,
                         textAlign = TextAlign.Center
                     )
                     Text(
                         text = "Humidity",
-                        fontSize = 14.sp,
+                        fontSize = 10.sp,
                         textAlign = TextAlign.Center
                     )
                 }
@@ -484,17 +575,17 @@ fun WeatherUI(city: String, currentTemp: Double?, forecast: List<Root>?) {
                         painter = windResource,
                         contentDescription = "Wind Image",
                         modifier = Modifier
-                            .size(50.dp)
+                            .size(40.dp)
                             .padding(8.dp)
                     )
                     Text(
                         text = "${forecast?.get(0)?.wind?.speed?.toInt()} km/h",
-                        fontSize = 18.sp,
+                        fontSize = 14.sp,
                         textAlign = TextAlign.Center
                     )
                     Text(
                         text = "Wind",
-                        fontSize = 14.sp,
+                        fontSize = 10.sp,
                         textAlign = TextAlign.Center
                     )
                 }
@@ -507,17 +598,17 @@ fun WeatherUI(city: String, currentTemp: Double?, forecast: List<Root>?) {
                         painter = pressureResource,
                         contentDescription = "Pressure Image",
                         modifier = Modifier
-                            .size(50.dp)
+                            .size(40.dp)
                             .padding(8.dp)
                     )
                     Text(
                         text = "${forecast?.get(0)?.main?.pressure?.toInt()} hPa",
-                        fontSize = 18.sp,
+                        fontSize = 14.sp,
                         textAlign = TextAlign.Center
                     )
                     Text(
                         text = "Pressure",
-                        fontSize = 14.sp,
+                        fontSize = 10.sp,
                         textAlign = TextAlign.Center
                     )
                 }
@@ -529,46 +620,18 @@ fun WeatherUI(city: String, currentTemp: Double?, forecast: List<Root>?) {
                 .fillMaxSize()
                 .padding(8.dp)
         ) {
-            items(forecast?.take(5) ?: emptyList()) { weather ->
+            items(forecast?.take(forecast.size) ?: emptyList()) { weather ->
 
                 // weather.wind.speed
                 // weather.main.humidity
                 // weather.main.pressure
 
-                val date = formatDate(weather.dt_txt).first
-                val dayOfWeek = formatDate(weather.dt_txt).second
+                val date = weather.dt_txt?.let { formatDate(it).first }
+                val dayOfWeek = weather.dt_txt?.let { formatDate(it).second }
 
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .shadow(4.dp),
-
-                    ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = date,
-                            fontSize = 16.sp,
-                            modifier = Modifier.weight(1f)
-                        )
-                        Text(
-                            text = dayOfWeek,
-                            fontSize = 16.sp,
-                            modifier = Modifier.weight(1f)
-                        )
-                        Text(
-                            text = "${weather.main.temp.toInt()}°C",
-                            fontSize = 16.sp,
-                            modifier = Modifier.weight(1f),
-                            textAlign = TextAlign.End
-                        )
+                if (dayOfWeek != null) {
+                    if (date != null) {
+                        ExpandableCard(date = date, dayOfWeek = dayOfWeek, weather = weather)
                     }
                 }
             }
@@ -576,10 +639,83 @@ fun WeatherUI(city: String, currentTemp: Double?, forecast: List<Root>?) {
     }
 }
 
-@Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
+fun ExpandableCard(
+    date: String,
+    dayOfWeek: String,
+    weather: Root // Assuming Weather is a data class
+) {
+    var expanded by remember { mutableStateOf(false) }
+    val rotationAngle by animateFloatAsState(if (expanded) 180f else 0f)
 
+
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .shadow(4.dp)
+            .clickable { expanded = !expanded } // Toggles expanded state
+            .animateContentSize() // Animates size change when expanded
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = if (expanded) 8.dp else 0.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = date,
+                    fontSize = 16.sp,
+                    modifier = Modifier.weight(1f)
+                )
+                Text(
+                    text = dayOfWeek,
+                    fontSize = 16.sp,
+                    modifier = Modifier.weight(1f)
+                )
+                Text(
+                    text = "${weather.main?.temp?.toInt()}°C",
+                    fontSize = 16.sp,
+                    modifier = Modifier.weight(1f),
+                    textAlign = TextAlign.End
+                )
+                Icon(
+                    imageVector = Icons.Default.KeyboardArrowDown,
+                    contentDescription = "Expand",
+                    modifier = Modifier
+                        .size(24.dp)
+                        .rotate(rotationAngle)
+                        .clickable { expanded = !expanded }
+                )
+            }
+
+            // Expanded content
+            if (expanded) {
+                Text(
+                    text = "Detailed weather information here...",
+                    fontSize = 14.sp,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+
+                Row {
+                    Text(
+                        text = "Detailed weather information here...",
+                        fontSize = 14.sp,
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
+                }
+                // Add more detailed content here as needed
+            }
+        }
+    }
 }
 
 @Composable
@@ -619,21 +755,18 @@ fun CityCheckbox(city: String, selectedCities: MutableList<String>, context: Con
 }
 
 fun saveSelectedCities(selectedCities: List<String>, context: Context) {
-
-    for (i in selectedCities) {
-        println("SelectedCities: $i")
-    }
-
+    val json = Gson().toJson(selectedCities)
     val sharedPreferences = context.getSharedPreferences("selected_cities", Context.MODE_PRIVATE)
     val editor = sharedPreferences.edit()
-    editor.putStringSet("cities", HashSet(selectedCities))
+    editor.putString("cities", json)
     editor.apply()
 }
 
 fun loadSelectedCities(context: Context): List<String> {
     val sharedPreferences = context.getSharedPreferences("selected_cities", Context.MODE_PRIVATE)
-    val savedCities = sharedPreferences.getStringSet("cities", HashSet()) ?: HashSet()
-    return savedCities.toList()
+    val json = sharedPreferences.getString("cities", null)
+    return Gson().fromJson(json, object : TypeToken<List<String>>() {}.type) ?: emptyList()
+
 }
 
 
@@ -666,4 +799,9 @@ fun getJsonDataFromAsset(context: Context, fileName: String): String? {
         return null
     }
     return jsonString
+}
+
+@Preview(showBackground = true)
+@Composable
+fun GreetingPreview() {
 }
