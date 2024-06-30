@@ -7,6 +7,4 @@ object Constants {
 }
 
 //c02ccc401302de7c2bcc016050415902
-
-
 //61e8b0259c092b1b9a15474cd800ee25

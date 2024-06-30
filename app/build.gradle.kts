@@ -99,6 +99,10 @@ dependencies {
 
     implementation (libs.androidx.viewpager2)
 
+
+    // Lottie
+    implementation (libs.lottie.compose)
+
 }
 
 // Allow references to generated code
