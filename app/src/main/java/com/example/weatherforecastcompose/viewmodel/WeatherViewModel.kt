@@ -94,14 +94,14 @@ class WeatherViewModel @Inject constructor(
     fun formatDate(dateString: String): Pair<String, String> {
         val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH)
         val date = LocalDateTime.parse(dateString, inputFormatter)
-        val day = date.dayOfMonth
-        val month = date.month.getDisplayName(TextStyle.FULL_STANDALONE, Locale("tr"))
+        //val day = date.dayOfMonth
+        //val month = date.month.getDisplayName(TextStyle.FULL_STANDALONE, Locale("tr"))
         val dayOfWeek = date.dayOfWeek.getDisplayName(TextStyle.FULL_STANDALONE, Locale("tr"))
         val time =
             "${date.hour}:${String.format("%02d", date.minute)}"
 
-        val formattedDate = "$day $month"
-        return Pair("$formattedDate $time", dayOfWeek)
+        return Pair(time, dayOfWeek)
     }
+
 }
 

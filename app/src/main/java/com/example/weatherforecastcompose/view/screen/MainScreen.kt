@@ -1,40 +1,38 @@
-import android.content.Context
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -47,7 +45,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
@@ -60,17 +58,19 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.compose.max_Temp
 import com.example.compose.min_Temp
-import com.example.weatherforecastcompose.R
 import com.example.weatherforecastcompose.model.Root
+import com.example.weatherforecastcompose.model.WeatheModel
 import com.example.weatherforecastcompose.repository.loadSelectedCities
-import com.example.weatherforecastcompose.ui.components.AnimatedNavDrawerMenuButton
-import com.example.weatherforecastcompose.ui.components.CheckboxList
-import com.example.weatherforecastcompose.ui.components.DotIndicator
+import com.example.weatherforecastcompose.ui.components.DrawerContent
 import com.example.weatherforecastcompose.ui.components.ExpandableCard
 import com.example.weatherforecastcompose.ui.components.LottieWeatherAnimationView
+import com.example.weatherforecastcompose.ui.components.MainTopAppBar
+import com.example.weatherforecastcompose.util.weatherResources
 import com.example.weatherforecastcompose.viewmodel.WeatherViewModel
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -94,11 +94,10 @@ fun MainScreen(viewModel: WeatherViewModel) {
                 selectedCities = selectedCities,
                 context = context
             )
-        },
-        drawerState = drawerState
+        }, drawerState = drawerState
     ) {
         val pagerState = rememberPagerState(pageCount = { selectedCities.size })
-        MainScaffold(
+        MainStructure(
             viewModel = viewModel,
             selectedCities = selectedCities,
             pagerState = pagerState,
@@ -108,75 +107,38 @@ fun MainScreen(viewModel: WeatherViewModel) {
     }
 }
 
-@Composable
-fun DrawerContent(
-    searchQuery: String,
-    onSearchQueryChange: (String) -> Unit,
-    cityNames: List<String>,
-    selectedCities: MutableList<String>,
-    context: Context
-) {
-    ModalDrawerSheet(
-        Modifier
-            .fillMaxWidth(0.8f)
-            .fillMaxHeight(),
-        drawerContainerColor = MaterialTheme.colorScheme.background.copy(alpha = 0.7f)
-    ) {
-        Spacer(modifier = Modifier.height(16.dp))
-        TextField(
-            value = searchQuery,
-            onValueChange = onSearchQueryChange,
-            placeholder = { Text("Search cities") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-
-        LazyColumn {
-            // Show selected cities regardless of search query
-            items(selectedCities) { cityName ->
-                CheckboxList(cityName, selectedCities, context = context)
-                HorizontalDivider(color = Color.Gray)
-            }
-
-            // Show filtered cities based on search query
-            if (searchQuery.isNotEmpty()) {
-                items(cityNames.filter {
-                    it.contains(searchQuery, ignoreCase = true)
-                }) { cityName ->
-                    if (!selectedCities.contains(cityName)) {
-                        CheckboxList(cityName, selectedCities, context = context)
-                        HorizontalDivider(color = Color.Gray)
-                    }
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-    }
-}
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun MainScaffold(
+fun MainStructure(
     viewModel: WeatherViewModel,
     selectedCities: MutableList<String>,
     pagerState: PagerState,
     drawerState: DrawerState,
     scope: CoroutineScope,
 ) {
+    //val main_background = Color(0xFFE0F7FA) // Replace with your desired color
+
     Scaffold(
+        modifier = Modifier
+            .fillMaxSize(),
+        //.background(main_background),
         topBar = {
             MainTopAppBar(
                 pagerState = pagerState,
                 drawerState = drawerState,
-                scope = scope
+                scope = scope,
+                backgroundColor = Color.Transparent // Make TopAppBar transparent
             )
         },
         content = { paddingValues ->
-            Column(modifier = Modifier.padding(paddingValues)) {
-                WeatherList(
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    //.background(main_background)
+                    .padding(paddingValues)
+            ) {
+                WeatherPagerViews(
                     viewModel = viewModel,
                     selectedCities = selectedCities,
                     pagerState = pagerState
@@ -184,62 +146,13 @@ fun MainScaffold(
             }
         }
     )
-}
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
-@Composable
-fun MainTopAppBar(
-    pagerState: PagerState,
-    drawerState: DrawerState,
-    scope: CoroutineScope
-) {
-    TopAppBar(
-        title = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Spacer(modifier = Modifier.weight(1f))
-
-                Box(
-                    modifier = Modifier.weight(1f)
-                ) {
-                    DotIndicator(
-                        pagerState = pagerState,
-                        modifier = Modifier.align(Alignment.Center)
-                    )
-                }
-
-                Box(
-                    modifier = Modifier.weight(1f),
-                    contentAlignment = Alignment.CenterEnd
-                ) {
-                    val iconState = remember { mutableStateOf(false) }
-
-                    AnimatedNavDrawerMenuButton(
-                        isOpen = drawerState.isOpen,
-                        onToggle = {
-                            iconState.value = !iconState.value
-                            scope.launch {
-                                if (drawerState.isOpen) {
-                                    drawerState.close()
-                                } else {
-                                    drawerState.open()
-                                }
-                            }
-                        }
-                    )
-                }
-            }
-        },
-    )
 }
 
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun WeatherList(
+fun WeatherPagerViews(
     viewModel: WeatherViewModel = hiltViewModel(),
     selectedCities: List<String>,
     pagerState: PagerState
@@ -249,6 +162,8 @@ fun WeatherList(
             pagerState.scrollToPage(0)
         }
     }
+//.background(main_background)
+
 
     HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) { page ->
         val cityName = selectedCities.getOrNull(page)
@@ -267,8 +182,7 @@ fun WeatherList(
             when {
                 isLoadingState && weatherState == null -> {
                     Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
+                        modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
                     ) {
                         CircularProgressIndicator()
                     }
@@ -281,28 +195,44 @@ fun WeatherList(
                 }
 
                 weatherState != null -> {
-                    WeatherUI(
-                        viewModel = viewModel,
-                        city,
-                        weatherState.list.firstOrNull()?.main?.temp,
-                        weatherState.list
-                    )
+                    Row(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        WeatherUI(
+                            viewModel = viewModel,
+                            city,
+                            weatherState.list.firstOrNull()?.main?.temp,
+                            weatherState
+                        )
+                    }
                 }
 
                 else -> {
-                    // Durum belirsizse bir şey yapma
+                    Row(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Lütfen İnternet Bağlantınızı Kontrol Edip Tekrar Deneyin",
+                            color = MaterialTheme.colorScheme.primary,
+                            fontSize = 40.sp
+                        )
+                    }
                 }
             }
         }
     }
+
 }
 
 
 @Composable
 fun RetryView(error: String, onRetry: () -> Unit) {
     Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+        modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
@@ -322,73 +252,95 @@ fun WeatherUI(
     viewModel: WeatherViewModel,
     city: String,
     currentTemp: Double?,
-    forecast: List<Root>?
+    forecast: WeatheModel?
 ) {
     val state = rememberScrollState()
     LaunchedEffect(Unit) { state.animateScrollTo(100) }
 
-    val humidityResource = rememberIconResource(
-        isSystemInDarkTheme(),
-        R.drawable.humidity_light,
-        R.drawable.humidity_dark
-    )
-    val windResource =
-        rememberIconResource(isSystemInDarkTheme(), R.drawable.wind_light, R.drawable.wind_dark)
-    val pressureResource = rememberIconResource(
-        isSystemInDarkTheme(),
-        R.drawable.pressure_light,
-        R.drawable.pressure_dark
-    )
-
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-        //.verticalScroll(state),
-        , verticalArrangement = Arrangement.SpaceAround,
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.SpaceAround,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        WeatherCard(
-            city = city,
-            currentTemp = currentTemp,
-            forecast = forecast,
-            viewModel = viewModel
-        )
-        WeatherDetailsCard(
-            humidityResource = humidityResource,
-            windResource = windResource,
-            pressureResource = pressureResource,
-            forecast = forecast
-        )
-        ForecastList(forecast = forecast, viewModel = viewModel)
+        if (forecast != null) {
+            WeatherCard(
+                city = city,
+                currentTemp = currentTemp,
+                forecast = forecast.list,
+                viewModel = viewModel
+            )
+        }
+        if (forecast != null) {
+            WeatherDetailsCard(
+                humidityResource = weatherResources().humidityResource,
+                windResource = weatherResources().windResource,
+                pressureResource = weatherResources().pressureResource,
+                forecast = forecast.list
+            )
+        }
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            if (forecast != null) {
+
+                Text(
+                    text = "Gün doğumu   ${formatTime(forecast.city.sunrise)}",
+                    fontSize = 10.sp,
+                    textAlign = TextAlign.Center
+                )
+
+                Text(
+                    text = "Gün batımı   ${formatTime(forecast.city.sunset)}",
+                    fontSize = 10.sp,
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+
+        if (forecast != null) {
+            ForecastList(forecast = forecast.list, viewModel = viewModel)
+        }
+
+
     }
 }
 
+fun formatTime(sunriseOrSunsetTimestamp: Long): String {
+    val date =
+        Date(sunriseOrSunsetTimestamp * 1000) // Unix zaman damgasını milisaniyeye çevirip Date nesnesi oluşturuyoruz
+    val convetData = SimpleDateFormat("HH:mm:ss", Locale.getDefault()) // Saat formatı belirliyoruz
+    val formattedTime = convetData.format(date)
+    return formattedTime
+
+}
+
+
 @Composable
 fun WeatherCard(
-    city: String,
-    currentTemp: Double?,
-    forecast: List<Root>?,
-    viewModel: WeatherViewModel
+    city: String, currentTemp: Double?, forecast: List<Root>?, viewModel: WeatherViewModel
 ) {
     Card(
         modifier = Modifier
-            .padding(10.dp)
             .fillMaxWidth()
-            .wrapContentHeight()
-            .clip(RoundedCornerShape(16.dp))
-            .shadow(8.dp)
+            .padding(10.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .animateContentSize()
     ) {
         Column(
             modifier = Modifier
-                //.fillMaxSize()
-                .padding(10.dp),
+                .background(MaterialTheme.colorScheme.surface),
             verticalArrangement = Arrangement.SpaceEvenly,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 text = city,
                 fontSize = 30.sp,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 10.dp),
                 textAlign = TextAlign.Center,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
@@ -454,21 +406,48 @@ fun WeatherCard(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(
-                    text = "${forecast?.get(0)?.main?.temp_min}°",
-                    fontSize = 21.sp,
-                    color = min_Temp,
-                    modifier = Modifier.padding(bottom = 16.dp),
-                    textAlign = TextAlign.Center
-                )
+                Column(
+                    verticalArrangement = Arrangement.SpaceAround,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "${forecast?.get(0)?.main?.temp_min}°",
+                        fontSize = 21.sp,
+                        color = min_Temp,
+                        modifier = Modifier.padding(bottom = 16.dp),
+                        textAlign = TextAlign.Center
+                    )
 
-                Text(
-                    text = "${forecast?.get(0)?.main?.temp_max}°",
-                    fontSize = 21.sp,
-                    color = max_Temp,
-                    modifier = Modifier.padding(bottom = 16.dp),
-                    textAlign = TextAlign.Center
-                )
+                    Icon(
+                        imageVector = Icons.Default.KeyboardArrowDown,
+                        contentDescription = "Expand",
+                        modifier = Modifier
+                            .size(24.dp)
+                            .rotate(0f)
+                    )
+                }
+
+                Column(
+                    verticalArrangement = Arrangement.SpaceAround,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "${forecast?.get(0)?.main?.temp_max}°",
+                        fontSize = 21.sp,
+                        color = max_Temp,
+                        modifier = Modifier.padding(bottom = 16.dp),
+                        textAlign = TextAlign.Center
+                    )
+                    Icon(
+                        imageVector = Icons.Default.KeyboardArrowDown,
+                        contentDescription = "Expand",
+                        modifier = Modifier
+                            .size(24.dp)
+                            .rotate(180f)
+                    )
+                }
+
+
             }
         }
     }
@@ -487,12 +466,15 @@ fun WeatherDetailsCard(
             .fillMaxWidth()
             .wrapContentHeight()
             .clip(RoundedCornerShape(16.dp))
-            .shadow(8.dp)
+        //.shadow(8.dp)
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.surface),
+            horizontalArrangement = Arrangement.SpaceBetween,
+
+            ) {
             DetailColumn(
                 iconResource = humidityResource,
                 value = "${forecast?.get(0)?.main?.humidity}%",
@@ -519,14 +501,10 @@ fun WeatherDetailsCard(
 
 @Composable
 fun DetailColumn(
-    iconResource: Painter,
-    value: String,
-    label: String,
-    modifier: Modifier = Modifier
+    iconResource: Painter, value: String, label: String, modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
             painter = iconResource,
@@ -536,17 +514,14 @@ fun DetailColumn(
                 .padding(8.dp)
         )
         Text(
-            text = value,
-            fontSize = 14.sp,
-            textAlign = TextAlign.Center
+            text = value, fontSize = 14.sp, textAlign = TextAlign.Center
         )
         Text(
-            text = label,
-            fontSize = 10.sp,
-            textAlign = TextAlign.Center
+            text = label, fontSize = 10.sp, textAlign = TextAlign.Center
         )
     }
 }
+
 
 @Composable
 fun rememberIconResource(isDarkTheme: Boolean, lightIcon: Int, darkIcon: Int): Painter {
@@ -559,19 +534,19 @@ fun rememberIconResource(isDarkTheme: Boolean, lightIcon: Int, darkIcon: Int): P
 
 @Composable
 fun ForecastList(
-    forecast: List<Root>?,
-    viewModel: WeatherViewModel
+    forecast: List<Root>?, viewModel: WeatherViewModel
 ) {
-    LazyColumn(
+    LazyRow(
         modifier = Modifier
             .fillMaxSize()
-            .padding(8.dp)
+            .padding(10.dp)
+
     ) {
         items(forecast?.slice(1..5) ?: emptyList()) { weather ->
             val date = viewModel.formatDate(weather.dt_txt).first
             val dayOfWeek = viewModel.formatDate(weather.dt_txt).second
             ExpandableCard(date = date, dayOfWeek = dayOfWeek, weather = weather)
-            Spacer(modifier = Modifier.height(8.dp)) // Add space between items if needed
+            Spacer(modifier = Modifier.width(8.dp)) // Add space between items if needed
         }
     }
 }
@@ -579,5 +554,6 @@ fun ForecastList(
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
-MainScreen(viewModel = hiltViewModel())
+//    CustomAnimationExample()
 }
+
