@@ -1,6 +1,6 @@
 package com.example.weatherforecastcompose.model
 
-data class WeatheModel(
+data class WeatherModel(
     val city: City,
     val cnt: Int,
     val cod: String,

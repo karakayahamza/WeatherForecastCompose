@@ -3,6 +3,8 @@ package com.example.weatherforecastcompose.ui.components
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Menu
@@ -73,4 +75,9 @@ fun AnimatedNavDrawerMenuButton(isOpen: Boolean, onToggle: () -> Unit) {
             modifier = Modifier.graphicsLayer(rotationZ = rotationAngle)
         )
     }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+fun PagerState.calculateCurrentOffsetForPage(page: Int): Float {
+    return (currentPage - page) + currentPageOffsetFraction
 }
