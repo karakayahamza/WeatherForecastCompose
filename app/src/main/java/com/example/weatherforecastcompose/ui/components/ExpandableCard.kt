@@ -2,7 +2,6 @@ package com.example.weatherforecastcompose.ui.components
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -16,7 +15,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -42,18 +40,17 @@ fun ExpandableCard(
 
     Card(modifier = Modifier
         .clip(RoundedCornerShape(4.dp))
-        .background(MaterialTheme.colorScheme.secondaryContainer)
         .animateContentSize()
+        .padding(4.dp)
         .clickable(
             interactionSource = remember { MutableInteractionSource() }, indication = null
-        ) { expanded = !expanded }
-        .padding(2.dp)) {
+        ) { expanded = !expanded }) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
                 .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.secondaryContainer)
+                .padding(4.dp)
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,

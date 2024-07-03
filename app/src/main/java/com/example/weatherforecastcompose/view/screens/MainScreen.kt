@@ -51,9 +51,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.example.compose.max_Temp
-import com.example.compose.min_Temp
 import com.example.weatherforecastcompose.model.Root
 import com.example.weatherforecastcompose.model.WeatherModel
 import com.example.weatherforecastcompose.repository.loadSelectedCities
@@ -62,6 +61,8 @@ import com.example.weatherforecastcompose.ui.components.ExpandableCard
 import com.example.weatherforecastcompose.ui.components.LottieWeatherAnimationView
 import com.example.weatherforecastcompose.ui.components.MainTopAppBar
 import com.example.weatherforecastcompose.ui.components.calculateCurrentOffsetForPage
+import com.example.weatherforecastcompose.ui.theme.max_Temp
+import com.example.weatherforecastcompose.ui.theme.min_Temp
 import com.example.weatherforecastcompose.ui.weatherResources
 import com.example.weatherforecastcompose.util.DateUtils.formatDate
 import com.example.weatherforecastcompose.util.DateUtils.formatTime
@@ -278,11 +279,16 @@ fun WeatherMainCard(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(8.dp))
+            .padding(16.dp)
     ) {
         Column(
-            modifier = Modifier.background(MaterialTheme.colorScheme.surface),
+            modifier = Modifier
+                //.background(MaterialTheme.colorScheme.secondaryContainer)
+                .padding(8.dp),
+
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
+
         ) {
             Text(
                 text = city,
@@ -389,8 +395,7 @@ fun WeatherHourlyDetailsCard(forecast: List<Root>) {
     LazyRow(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(5.dp)
-            .background(MaterialTheme.colorScheme.surface),
+            .padding(5.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
@@ -410,8 +415,7 @@ fun SunriseSunsetInfo(sunrise: Long, sunset: Long) {
 
     Row(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
+            .fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -434,22 +438,23 @@ fun SunriseSunsetInfo(sunrise: Long, sunset: Long) {
 fun SunriseSunsetColumn(label: String, time: String, jsonFileName: String) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceEvenly
     ) {
         val composition by rememberLottieComposition(
             spec = LottieCompositionSpec.Asset(jsonFileName)
         )
         LottieAnimation(
             composition = composition,
+            iterations = LottieConstants.IterateForever,
             modifier = Modifier
                 .size(55.dp)
-                .padding(vertical = 5.dp)
         )
 
         Text(
             text = label,
             fontSize = 12.sp,
-            color = MaterialTheme.colorScheme.primary,
-        )
+
+            )
         Text(
             text = time,
             fontSize = 14.sp,
@@ -467,18 +472,22 @@ fun WeatherDetailsCard(
     forecast: List<Root>?
 ) {
 
-    Row(modifier = Modifier.padding(16.dp)) {
+    Row(
+        modifier = Modifier
+            .padding(start = 16.dp, end = 16.dp)
+        //.background(MaterialTheme.colorScheme.background)
+    ) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
                 .clip(RoundedCornerShape(16.dp))
-                .background(MaterialTheme.colorScheme.secondaryContainer)
+            //.background(MaterialTheme.colorScheme.secondaryContainer)
         ) {
             Row(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.secondaryContainer),
+                    .fillMaxWidth(),
+                //.background(MaterialTheme.colorScheme.secondaryContainer),
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 WeatherDetailItem(
