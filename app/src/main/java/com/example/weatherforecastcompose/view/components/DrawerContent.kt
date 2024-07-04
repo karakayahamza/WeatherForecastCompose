@@ -1,4 +1,4 @@
-package com.example.weatherforecastcompose.ui.components
+package com.example.weatherforecastcompose.view.components
 
 import android.content.Context
 import androidx.compose.foundation.layout.Spacer
@@ -12,15 +12,13 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.DrawerState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,15 +27,20 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DrawerContent(
+    drawerState: DrawerState,
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
     cityNames: List<String>,
     selectedCities: MutableList<String>,
-    context: Context
+    context: Context,
+    onDrawerClosed: @Composable () -> Unit
 ) {
+    if (drawerState.isClosed) {
+        onDrawerClosed()
+    }
+
     ModalDrawerSheet(
         Modifier
             .fillMaxWidth(0.8f)
@@ -50,7 +53,7 @@ fun DrawerContent(
         OutlinedTextField(
             value = searchQuery,
             onValueChange = onSearchQueryChange,
-            placeholder = { Text("Search cities") },
+            placeholder = { Text("Ara..") },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 8.dp),
@@ -59,19 +62,13 @@ fun DrawerContent(
             leadingIcon = {
                 Icon(Icons.Default.Search, contentDescription = "Search")
             },
-//            colors = TextFieldDefaults.outlinedTextFieldColors(
-//                focusedBorderColor = Color.Blue, // Customize focused border color
-//                unfocusedBorderColor = Color.Gray, // Customize unfocused border color
-//                cursorColor = Color.Black // Customize cursor color
-//            ),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Text,
                 imeAction = ImeAction.Search
             ),
             keyboardActions = KeyboardActions(
                 onSearch = {
-                    // Perform search action here
-                    keyboardController?.hide() // Hide keyboard when search action is performed
+                    keyboardController?.hide()
                 }
             )
         )

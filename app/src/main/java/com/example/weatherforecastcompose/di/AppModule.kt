@@ -32,5 +32,4 @@ class AppModule {
             .build()
             .create(WeatherAPI::class.java)
     }
-
 }

@@ -1,4 +1,4 @@
-package com.example.weatherforecastcompose.ui.components
+package com.example.weatherforecastcompose.view.components
 
 import android.content.Context
 import androidx.compose.foundation.clickable

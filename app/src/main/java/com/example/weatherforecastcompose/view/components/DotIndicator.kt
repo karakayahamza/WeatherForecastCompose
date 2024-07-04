@@ -1,4 +1,4 @@
-package com.example.weatherforecastcompose.ui.components
+package com.example.weatherforecastcompose.view.components
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background

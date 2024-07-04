@@ -1,4 +1,4 @@
-package com.example.weatherforecastcompose.ui.components
+package com.example.weatherforecastcompose.view.components
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
@@ -60,6 +60,7 @@ fun MainTopAppBar(
                     iconState.value = !iconState.value
                     scope.launch {
                         if (drawerState.isOpen) {
+
                             drawerState.close()
                         } else {
                             drawerState.open()
