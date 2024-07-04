@@ -17,7 +17,6 @@ fun WeatherContent(
 ) {
 
     Column(
-        modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start
     ) {

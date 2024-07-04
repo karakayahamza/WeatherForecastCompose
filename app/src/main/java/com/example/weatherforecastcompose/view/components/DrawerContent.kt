@@ -37,6 +37,7 @@ fun DrawerContent(
     context: Context,
     onDrawerClosed: @Composable () -> Unit
 ) {
+
     if (drawerState.isClosed) {
         onDrawerClosed()
     }

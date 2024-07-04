@@ -4,9 +4,7 @@ coilCompose = "2.4.0"
 converterGson = "2.9.0"
 hiltAndroid = "2.49"
 hiltAndroidCompiler = "2.48"
-hiltAndroidVersion = "2.48"
 hiltCompiler = "1.2.0"
-hiltNavigationCompose = "1.2.0"
 hiltNavigationComposeVersion = "1.2.0"
 kotlin = "1.9.0"
 coreKtx = "1.13.1"
@@ -15,19 +13,15 @@ junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 kotlinxCoroutinesCore = "1.7.3"
 kotlinxCoroutinesAndroid = "1.7.3"
-lifecycleRuntimeKtx = "2.8.2"
+lifecycleRuntimeKtx = "2.8.3"
 activityCompose = "1.9.0"
 composeBom = "2024.06.00"
-loggingInterceptor = "5.0.0-alpha.2"
 lottieCompose = "6.0.0"
 navigationFragmentKtx = "2.7.7"
-okhttp = "5.0.0-alpha.2"
-retrofit = "(insert latest version)"
 retrofitVersion = "2.9.0"
 rxandroid = "2.1.1"
 rxjava = "2.2.21"
 viewpager2 = "1.1.0"
-workRuntimeKtx = "2.9.0"
 workRuntimeKtxVersion = "2.9.0"
 foundationDesktop = "1.6.8"
 uiTextGoogleFonts = "1.6.8"
@@ -38,7 +32,6 @@ pagingCommonAndroid = "3.3.0"
 adapter-rxjava2 = { module = "com.squareup.retrofit2:adapter-rxjava2", version.ref = "converterGson" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationComposeVersion" }
-androidx-hilt-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "hiltCompiler" }
 androidx-hilt-work = { module = "androidx.hilt:hilt-work", version.ref = "hiltCompiler" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationFragmentKtx" }
 androidx-navigation-fragment-ktx = { module = "androidx.navigation:navigation-fragment-ktx", version.ref = "navigationFragmentKtx" }
@@ -69,7 +62,6 @@ lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "
 retrofit-v290 = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofitVersion" }
 rxandroid = { module = "io.reactivex.rxjava2:rxandroid", version.ref = "rxandroid" }
 rxjava = { module = "io.reactivex.rxjava2:rxjava", version.ref = "rxjava" }
-androidx-foundation-desktop = { group = "androidx.compose.foundation", name = "foundation-desktop", version.ref = "foundationDesktop" }
 androidx-ui-text-google-fonts = { group = "androidx.compose.ui", name = "ui-text-google-fonts", version.ref = "uiTextGoogleFonts" }
 androidx-benchmark-common = { group = "androidx.benchmark", name = "benchmark-common", version.ref = "benchmarkCommon" }
 androidx-paging-common-android = { group = "androidx.paging", name = "paging-common-android", version.ref = "pagingCommonAndroid" }

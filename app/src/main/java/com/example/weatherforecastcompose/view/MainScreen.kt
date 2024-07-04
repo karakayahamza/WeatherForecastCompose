@@ -40,8 +40,6 @@ import kotlin.math.absoluteValue
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun WeatherMainScreen(viewModel: WeatherViewModel) {
-
-
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     var searchQuery by remember { mutableStateOf("") }
@@ -95,7 +93,6 @@ fun WeatherMainStructure(
             selectedCities = selectedCities,
             pagerState = pagerState,
             modifier = Modifier
-                .fillMaxSize()
                 .padding(paddingValues)
         )
     })
@@ -122,7 +119,6 @@ fun WeatherPager(
     HorizontalPager(
         state = pagerState, modifier = modifier.fillMaxSize(), verticalAlignment = Alignment.Top
     ) { page ->
-
         Box(
             Modifier
                 .graphicsLayer {
@@ -130,7 +126,7 @@ fun WeatherPager(
                     translationX = pageOffset * size.width
                     alpha = 1 - pageOffset.absoluteValue
                 }
-                .fillMaxSize()) {
+                ) {
             val cityName = selectedCities.getOrNull(page)
             cityName?.let { city ->
                 WeatherPageContent(viewModel = viewModel, city = city)

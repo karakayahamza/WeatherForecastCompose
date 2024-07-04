@@ -65,6 +65,7 @@ dependencies {
     implementation(libs.androidx.benchmark.common)
     implementation(libs.androidx.paging.common.android)
     testImplementation(libs.junit)
+    androidTestImplementation ("androidx.compose.ui:ui-test-junit4:1.6.8")
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.ui.test.junit4)
