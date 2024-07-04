@@ -52,7 +52,7 @@ fun MainTopAppBar(
                     Icon(Icons.Default.Info, contentDescription = "Info")
                 }
 
-                DotIndicator(pagerState = pagerState)
+                AnimatedDotIndicator(pagerState = pagerState)
 
                 val iconState = remember { mutableStateOf(false) }
 

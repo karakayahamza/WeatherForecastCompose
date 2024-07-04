@@ -88,7 +88,6 @@ fun WeatherMainCard(
                 textAlign = TextAlign.Center
             )
 
-            MinMaxTemperatureInfo(forecast)
         }
     }
 }

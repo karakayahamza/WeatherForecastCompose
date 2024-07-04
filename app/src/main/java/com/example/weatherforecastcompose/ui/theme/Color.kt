@@ -2,8 +2,8 @@ package com.example.weatherforecastcompose.ui.theme
 import androidx.compose.ui.graphics.Color
 
 val primaryLight = Color(0xFF607D8B)      // Blue Grey
-val onPrimaryLight = Color.White
-val primaryContainerLight = Color(0xFFCFD8DC)  // Light Blue Grey
+val onPrimaryLight = Color(0xFFE0E0E0)
+val primaryContainerLight = Color(0xFFFFFFFF)  // Light Blue Grey Color(0xFFCFD8DC)
 val onPrimaryContainerLight = Color(0xFF37474F) // Dark Blue Grey
 val secondaryLight = Color(0xFF9E9E9E)    // Grey
 val onSecondaryLight = Color.White
