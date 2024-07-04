@@ -1,6 +1,6 @@
 package com.example.weatherforecastcompose
 
-import WeatherMainScreen
+import com.example.weatherforecastcompose.view.WeatherMainScreen
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
