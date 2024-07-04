@@ -26,18 +26,20 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.weatherforecastcompose.viewmodel.WeatherViewModel
 
 @Composable
 fun DrawerContent(
     drawerState: DrawerState,
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
-    cityNames: List<String>,
     selectedCities: MutableList<String>,
     context: Context,
+    viewModel: WeatherViewModel = hiltViewModel(),
     onDrawerClosed: @Composable () -> Unit
 ) {
-
+    val cityNames = viewModel.getDistrictNames(context)
     if (drawerState.isClosed) {
         onDrawerClosed()
     }
@@ -46,7 +48,7 @@ fun DrawerContent(
         Modifier
             .fillMaxWidth(0.8f)
             .fillMaxHeight(),
-        drawerContainerColor = MaterialTheme.colorScheme.background.copy(alpha = 0.7f)
+        drawerContainerColor = MaterialTheme.colorScheme.background.copy(alpha = 0.9f)
     ) {
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -93,6 +95,11 @@ fun DrawerContent(
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.weight(1f))
+        Text(
+            text = "Created by hkarakaya",
+            modifier = Modifier.padding(16.dp),
+            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+        )
     }
 }
