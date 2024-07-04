@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -46,7 +47,7 @@ fun CheckboxList(item: String, selectedItems: MutableList<String>, context: Cont
             }, modifier = Modifier.padding(end = 16.dp)
         )
         Text(
-            text = item, fontSize = 16.sp, color = Color.White
+            text = item, fontSize = 16.sp, color = MaterialTheme.colorScheme.primary
         )
     }
 }

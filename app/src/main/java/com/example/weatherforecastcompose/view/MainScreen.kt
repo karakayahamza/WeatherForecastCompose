@@ -39,14 +39,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun WeatherMainScreen(viewModel: WeatherViewModel) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val scope = rememberCoroutineScope()
     var searchQuery by remember { mutableStateOf("") }
     val context = LocalContext.current
-    val cityNames = viewModel.getDistrictNames(context)
     val selectedCities = remember { mutableStateListOf<String>() }
     selectedCities.addAll(loadSelectedCities(context))
 
@@ -54,7 +51,6 @@ fun WeatherMainScreen(viewModel: WeatherViewModel) {
         DrawerContent(drawerState = drawerState,
             searchQuery = searchQuery,
             onSearchQueryChange = { searchQuery = it },
-            cityNames = cityNames,
             selectedCities = selectedCities,
             context = context,
             onDrawerClosed = {
@@ -62,13 +58,11 @@ fun WeatherMainScreen(viewModel: WeatherViewModel) {
                 LocalSoftwareKeyboardController.current?.hide()
             })
     }) {
-        val pagerState = rememberPagerState(pageCount = { selectedCities.size })
+
         WeatherMainStructure(
             viewModel = viewModel,
             selectedCities = selectedCities,
-            pagerState = pagerState,
             drawerState = drawerState,
-            scope = scope
         )
     }
 }
@@ -78,10 +72,10 @@ fun WeatherMainScreen(viewModel: WeatherViewModel) {
 fun WeatherMainStructure(
     viewModel: WeatherViewModel,
     selectedCities: List<String>,
-    pagerState: PagerState,
     drawerState: DrawerState,
-    scope: CoroutineScope
 ) {
+    val pagerState = rememberPagerState(pageCount = { selectedCities.size })
+    val scope = rememberCoroutineScope()
     Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
         MainTopAppBar(
             pagerState = pagerState,
@@ -128,7 +122,7 @@ fun WeatherPager(
                     translationX = pageOffset * size.width
                     alpha = 1 - pageOffset.absoluteValue
                 }
-                ) {
+        ) {
             val cityName = selectedCities.getOrNull(page)
             cityName?.let { city ->
                 WeatherPageContent(viewModel = viewModel, city = city)
