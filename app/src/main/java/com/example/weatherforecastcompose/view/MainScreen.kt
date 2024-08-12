@@ -1,5 +1,12 @@
 package com.example.weatherforecastcompose.view
 
+import android.annotation.SuppressLint
+import android.content.Context
+import android.location.Geocoder
+import android.location.Location
+import android.location.LocationManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,6 +33,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import com.example.weatherforecastcompose.model.Main
+import com.example.weatherforecastcompose.model.WeatherModel
 import com.example.weatherforecastcompose.repository.loadSelectedCities
 import com.example.weatherforecastcompose.view.components.DrawerContent
 import com.example.weatherforecastcompose.view.components.LoadingIndicator
@@ -35,7 +44,8 @@ import com.example.weatherforecastcompose.view.components.WeatherContent
 import com.example.weatherforecastcompose.view.components.WeatherRetryView
 import com.example.weatherforecastcompose.view.components.calculateCurrentOffsetForPage
 import com.example.weatherforecastcompose.viewmodel.WeatherViewModel
-import kotlinx.coroutines.CoroutineScope
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
 
@@ -45,10 +55,30 @@ fun WeatherMainScreen(viewModel: WeatherViewModel) {
     var searchQuery by remember { mutableStateOf("") }
     val context = LocalContext.current
     val selectedCities = remember { mutableStateListOf<String>() }
+    val currentLatLon = remember { mutableStateOf<Pair<Double, Double>?>(null) }
     selectedCities.addAll(loadSelectedCities(context))
 
+    val locationPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = { isGranted ->
+            if (isGranted) {
+                loadCurrentLocationCity(context) { latLon ->
+                    currentLatLon.value = latLon
+                    currentLatLon.value?.let { (lat, lon) ->
+                        viewModel.loadCurrentWeather(lat.toString(), lon.toString())
+                    }
+                }
+            }
+        }
+    )
+
+    LaunchedEffect(Unit) {
+        locationPermissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
+    }
+
     ModalNavigationDrawer(drawerState = drawerState, drawerContent = {
-        DrawerContent(drawerState = drawerState,
+        DrawerContent(
+            drawerState = drawerState,
             searchQuery = searchQuery,
             onSearchQueryChange = { searchQuery = it },
             selectedCities = selectedCities,
@@ -56,16 +86,36 @@ fun WeatherMainScreen(viewModel: WeatherViewModel) {
             onDrawerClosed = {
                 searchQuery = ""
                 LocalSoftwareKeyboardController.current?.hide()
-            })
+            }
+        )
     }) {
+        val citiesToDisplay = if (viewModel.currentCityName != null && viewModel.currentWeatherData != null) {
+            // Display current location's weather first, followed by selected cities
+            listOf(viewModel.currentCityName!!) + selectedCities
+        } else {
+            selectedCities
+        }
 
         WeatherMainStructure(
             viewModel = viewModel,
-            selectedCities = selectedCities,
+            selectedCities = citiesToDisplay,
             drawerState = drawerState,
+            currentWeatherData = viewModel.currentWeatherData
         )
     }
 }
+
+
+@SuppressLint("MissingPermission")
+fun loadCurrentLocationCity(context: Context, onCityFound: (Pair<Double, Double>) -> Unit) {
+    val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
+    fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+        location?.let {
+            onCityFound(Pair(it.latitude, it.longitude))
+        }
+    }
+}
+
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -73,9 +123,11 @@ fun WeatherMainStructure(
     viewModel: WeatherViewModel,
     selectedCities: List<String>,
     drawerState: DrawerState,
+    currentWeatherData: WeatherModel?
 ) {
     val pagerState = rememberPagerState(pageCount = { selectedCities.size })
     val scope = rememberCoroutineScope()
+
     Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
         MainTopAppBar(
             pagerState = pagerState,
@@ -89,7 +141,8 @@ fun WeatherMainStructure(
             selectedCities = selectedCities,
             pagerState = pagerState,
             modifier = Modifier
-                .padding(paddingValues)
+                .padding(paddingValues),
+            currentWeatherData = currentWeatherData
         )
     })
 }
@@ -100,7 +153,8 @@ fun WeatherPager(
     viewModel: WeatherViewModel,
     selectedCities: List<String>,
     pagerState: PagerState,
-    modifier: Modifier
+    modifier: Modifier,
+    currentWeatherData: WeatherModel?
 ) {
     val coroutineScope = rememberCoroutineScope()
 
@@ -124,44 +178,40 @@ fun WeatherPager(
                 }
         ) {
             val cityName = selectedCities.getOrNull(page)
-            cityName?.let { city ->
-                WeatherPageContent(viewModel = viewModel, city = city)
+            if (page == 0 && currentWeatherData != null) {
+                // Display the current location's weather data
+                WeatherPageContent(viewModel = viewModel, city = "Current Location", weatherData = currentWeatherData)
+            } else {
+                cityName?.let { city ->
+                    WeatherPageContent(viewModel = viewModel, city = city)
+                }
             }
-
         }
     }
 }
 
-
 @Composable
-fun WeatherPageContent(viewModel: WeatherViewModel, city: String) {
-    LaunchedEffect(key1 = city) {
-        if (viewModel.weatherData[city] == null) {
-            viewModel.loadWeather(city)
-        }
-    }
-
-    val weatherState = viewModel.weatherData[city]
+fun WeatherPageContent(
+    viewModel: WeatherViewModel,
+    city: String,
+    weatherData: WeatherModel? = null
+) {
+    val weatherState = if (city == "Current Location") weatherData else viewModel.weatherData[city]
     val errorMessageState = viewModel.errorMessages[city] ?: ""
     val isLoadingState = viewModel.isLoading[city] ?: false
 
     when {
-
         isLoadingState && weatherState == null -> LoadingIndicator()
-
         errorMessageState.isNotEmpty() -> WeatherRetryView(error = errorMessageState) {
             viewModel.loadWeather(city)
         }
-
         weatherState != null -> {
-
             WeatherContent(
                 city = city,
                 currentTemp = weatherState.list.firstOrNull()?.main?.temp,
                 forecast = weatherState
             )
         }
-
         else -> NoInternetConnectionMessage()
     }
 }

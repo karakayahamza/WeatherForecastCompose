@@ -3,10 +3,12 @@ package com.example.weatherforecastcompose.viewmodel
 import android.content.Context
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.weatherforecastcompose.model.CityList
 import com.example.weatherforecastcompose.model.WeatherModel
+import com.example.weatherforecastcompose.repository.CurrentWeatherRepository
 import com.example.weatherforecastcompose.repository.WeatherRepository
 import com.example.weatherforecastcompose.util.Resource
 import com.google.gson.Gson
@@ -18,10 +20,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WeatherViewModel @Inject constructor(
-    private val repository: WeatherRepository
+    private val repository: WeatherRepository,
+    private val currentRepository: CurrentWeatherRepository
 ) : ViewModel() {
 
-    private var _selectedCities = mutableStateListOf<String>()
+    private val _selectedCities = mutableStateListOf("DefaultCityName")
     val selectedCities: List<String> get() = _selectedCities
 
     private val _weatherData = mutableStateMapOf<String, WeatherModel?>()
@@ -33,9 +36,16 @@ class WeatherViewModel @Inject constructor(
     private val _isLoading = mutableStateMapOf<String, Boolean>()
     val isLoading: Map<String, Boolean> get() = _isLoading
 
+    private val _currentWeatherData = mutableStateOf<WeatherModel?>(null)
+    val currentWeatherData: WeatherModel? get() = _currentWeatherData.value
+
+    private val _currentCityName = mutableStateOf<String?>(null)
+    val currentCityName: String? get() = _currentCityName.value
+
     init {
-        _selectedCities.add("DefaultCityName")
-        loadWeather(_selectedCities.first())
+        if (_selectedCities.isNotEmpty()) {
+            loadWeather(_selectedCities.first())
+        }
     }
 
     fun loadWeather(cityName: String) {
@@ -46,18 +56,32 @@ class WeatherViewModel @Inject constructor(
                     _weatherData[cityName] = result.data
                     _errorMessages[cityName] = ""
                 }
-
                 is Resource.Error -> {
                     _errorMessages[cityName] = result.message ?: "Unknown error"
                 }
-
-                is Resource.Loading -> {
-                }
+                else -> {}
             }
             _isLoading[cityName] = false
         }
     }
 
+    fun loadCurrentWeather(lat: String, lon: String) {
+        viewModelScope.launch {
+            when (val result = currentRepository.getCurrentWeatherList(lat, lon)) {
+                is Resource.Success -> {
+                    _currentWeatherData.value = result.data
+                    // Assume result.data includes city name
+                    _currentCityName.value = result.data?.city?.name
+                }
+                is Resource.Error -> {
+                    println(result.message ?: "Unknown error")
+                }
+                else -> {
+                    println("An error occurred.")
+                }
+            }
+        }
+    }
 
     fun getDistrictNames(context: Context): List<String> {
         val jsonFileString = getJsonDataFromAsset(context, "city_list.json")
@@ -65,22 +89,16 @@ class WeatherViewModel @Inject constructor(
         val listCityType = object : TypeToken<List<CityList>>() {}.type
         val cities: List<CityList> = gson.fromJson(jsonFileString, listCityType)
 
-        val districtNames = mutableListOf<String>()
-        cities.forEach { city ->
-            districtNames.addAll(city.districts)
-        }
-        return districtNames
+        return cities.flatMap { it.districts }
     }
-
 
     private fun getJsonDataFromAsset(context: Context, fileName: String): String? {
-        val jsonString: String
-        try {
-            jsonString = context.assets.open(fileName).bufferedReader().use { it.readText() }
+        return try {
+            context.assets.open(fileName).bufferedReader().use { it.readText() }
         } catch (ioException: IOException) {
             ioException.printStackTrace()
-            return null
+            null
         }
-        return jsonString
     }
 }
+

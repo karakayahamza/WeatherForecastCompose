@@ -21,7 +21,7 @@ fun WeatherContent(
         horizontalAlignment = Alignment.Start
     ) {
         forecast?.let {
-            WeatherMainCard(city, currentTemp, it.list)
+            WeatherMainCard(forecast.city.name, currentTemp, it.list)
             WeatherDetailsCard(
                 humidityResource = weatherResources().humidityResource,
                 windResource = weatherResources().windResource,

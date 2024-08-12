@@ -64,6 +64,7 @@ dependencies {
     implementation(libs.androidx.ui.text.google.fonts)
     implementation(libs.androidx.benchmark.common)
     implementation(libs.androidx.paging.common.android)
+    implementation(libs.play.services.location)
     testImplementation(libs.junit)
     androidTestImplementation (libs.ui.test.junit4)
     androidTestImplementation(libs.androidx.junit)

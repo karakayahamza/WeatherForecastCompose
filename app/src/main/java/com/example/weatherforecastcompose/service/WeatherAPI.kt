@@ -12,3 +12,12 @@ interface WeatherAPI {
         @Query("units") units: String?
     ): WeatherModel
 }
+
+interface WeatherAPICurrentLocation {
+    @GET("forecast?&lang=tr&units=metric")
+    suspend fun getCurrentData(
+        @Query("lat") lat: String?,
+        @Query("lon") lon: String?,
+        @Query("APPID") appId: String?
+    ): WeatherModel
+}
