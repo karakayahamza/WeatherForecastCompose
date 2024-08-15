@@ -36,7 +36,8 @@ fun MainTopAppBar(
     pagerState: PagerState,
     drawerState: DrawerState,
     scope: CoroutineScope,
-    backgroundColor: Color = MaterialTheme.colorScheme.primary
+    backgroundColor: Color = MaterialTheme.colorScheme.primary,
+    currentPlace: Pair<Double, Double>? // Add currentPlace parameter
 ) {
     var showDialog by remember { mutableStateOf(false) }
 
@@ -52,7 +53,10 @@ fun MainTopAppBar(
                     Icon(Icons.Default.Info, contentDescription = "Info")
                 }
 
-                AnimatedDotIndicator(pagerState = pagerState)
+                AnimatedDotIndicator(
+                    pagerState = pagerState,
+                    currentPlace = currentPlace
+                )
 
                 val iconState = remember { mutableStateOf(false) }
 
@@ -60,7 +64,6 @@ fun MainTopAppBar(
                     iconState.value = !iconState.value
                     scope.launch {
                         if (drawerState.isOpen) {
-
                             drawerState.close()
                         } else {
                             drawerState.open()
@@ -95,4 +98,3 @@ fun MainTopAppBar(
         )
     }
 }
-

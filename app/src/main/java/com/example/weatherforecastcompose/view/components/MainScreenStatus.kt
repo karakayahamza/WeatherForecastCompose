@@ -23,17 +23,6 @@ fun LoadingIndicator() {
 }
 
 @Composable
-fun NoInternetConnectionMessage() {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text(
-            text = "Lütfen İnternet Bağlantınızı Kontrol Edip Tekrar Deneyin",
-            color = MaterialTheme.colorScheme.primary,
-            fontSize = 20.sp
-        )
-    }
-}
-
-@Composable
 fun WeatherRetryView(error: String, onRetry: () -> Unit) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {

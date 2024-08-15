@@ -1,4 +1,5 @@
 [versions]
+accompanistPermissions = "0.30.1"
 agp = "8.5.0"
 coilCompose = "2.4.0"
 converterGson = "2.9.0"
@@ -28,8 +29,13 @@ uiTextGoogleFonts = "1.6.8"
 benchmarkCommon = "1.2.4"
 pagingCommonAndroid = "3.3.0"
 playServicesLocation = "21.3.0"
+appcompat = "1.6.1"
+material = "1.10.0"
+activity = "1.9.1"
+constraintlayout = "2.1.4"
 
 [libraries]
+accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
 adapter-rxjava2 = { module = "com.squareup.retrofit2:adapter-rxjava2", version.ref = "converterGson" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationComposeVersion" }
@@ -68,6 +74,10 @@ androidx-benchmark-common = { group = "androidx.benchmark", name = "benchmark-co
 androidx-paging-common-android = { group = "androidx.paging", name = "paging-common-android", version.ref = "pagingCommonAndroid" }
 ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "uiTestJunit4" }
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -1,7 +1,7 @@
+// WeatherViewModel.kt
 package com.example.weatherforecastcompose.viewmodel
 
 import android.content.Context
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -24,8 +24,8 @@ class WeatherViewModel @Inject constructor(
     private val currentRepository: CurrentWeatherRepository
 ) : ViewModel() {
 
-    private val _selectedCities = mutableStateListOf("DefaultCityName")
-    val selectedCities: List<String> get() = _selectedCities
+//    private val _selectedCities = mutableStateListOf<String>()
+//    val selectedCities: List<String> get() = _selectedCities
 
     private val _weatherData = mutableStateMapOf<String, WeatherModel?>()
     val weatherData: Map<String, WeatherModel?> get() = _weatherData
@@ -42,12 +42,6 @@ class WeatherViewModel @Inject constructor(
     private val _currentCityName = mutableStateOf<String?>(null)
     val currentCityName: String? get() = _currentCityName.value
 
-    init {
-        if (_selectedCities.isNotEmpty()) {
-            loadWeather(_selectedCities.first())
-        }
-    }
-
     fun loadWeather(cityName: String) {
         viewModelScope.launch {
             _isLoading[cityName] = true
@@ -56,26 +50,31 @@ class WeatherViewModel @Inject constructor(
                     _weatherData[cityName] = result.data
                     _errorMessages[cityName] = ""
                 }
+
                 is Resource.Error -> {
                     _errorMessages[cityName] = result.message ?: "Unknown error"
                 }
+
                 else -> {}
             }
             _isLoading[cityName] = false
         }
     }
 
+
     fun loadCurrentWeather(lat: String, lon: String) {
         viewModelScope.launch {
             when (val result = currentRepository.getCurrentWeatherList(lat, lon)) {
                 is Resource.Success -> {
                     _currentWeatherData.value = result.data
-                    // Assume result.data includes city name
+                    // Set city name from the response data
                     _currentCityName.value = result.data?.city?.name
                 }
+
                 is Resource.Error -> {
                     println(result.message ?: "Unknown error")
                 }
+
                 else -> {
                     println("An error occurred.")
                 }
@@ -101,4 +100,3 @@ class WeatherViewModel @Inject constructor(
         }
     }
 }
-

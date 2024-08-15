@@ -65,11 +65,16 @@ dependencies {
     implementation(libs.androidx.benchmark.common)
     implementation(libs.androidx.paging.common.android)
     implementation(libs.play.services.location)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
+    implementation(libs.androidx.activity)
+    implementation(libs.androidx.constraintlayout)
     testImplementation(libs.junit)
     androidTestImplementation (libs.ui.test.junit4)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.ui.test.junit4)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
@@ -106,6 +111,10 @@ dependencies {
 
     // Lottie
     implementation (libs.lottie.compose)
+
+
+    implementation (libs.accompanist.permissions)
+
 
 }
 
