@@ -1,11 +1,20 @@
 package com.example.weatherforecastcompose.view.components
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.AlertDialog
@@ -26,6 +35,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -37,7 +49,7 @@ fun MainTopAppBar(
     drawerState: DrawerState,
     scope: CoroutineScope,
     backgroundColor: Color = MaterialTheme.colorScheme.primary,
-    currentPlace: Pair<Double, Double>? // Add currentPlace parameter
+    currentPlace: Pair<Double, Double>?
 ) {
     var showDialog by remember { mutableStateOf(false) }
 
@@ -74,27 +86,116 @@ fun MainTopAppBar(
         },
     )
 
-    if (showDialog) {
-        AlertDialog(
-            onDismissRequest = { showDialog = false },
-            title = { Text("Rüzgar Yönleri") },
-            text = {
-                Column {
-                    Text("K: Kuzey")
-                    Text("KD: Kuzeydoğu")
-                    Text("D: Doğu")
-                    Text("GD: Güneydoğu")
-                    Text("G: Güney")
-                    Text("GB: Güneybatı")
-                    Text("B: Batı")
-                    Text("KB: Kuzeybatı")
-                }
-            },
-            confirmButton = {
-                TextButton(onClick = { showDialog = false }) {
-                    Text("Tamam")
+
+
+
+//    if (showDialog) {
+//        AlertDialog(
+//            onDismissRequest = { showDialog = false },
+//            title = { Text("Rüzgar Yönleri") },
+//            text = {
+//                Column {
+//                    Text("K: Kuzey")
+//                    Text("KD: Kuzeydoğu")
+//                    Text("D: Doğu")
+//                    Text("GD: Güneydoğu")
+//                    Text("G: Güney")
+//                    Text("GB: Güneybatı")
+//                    Text("B: Batı")
+//                    Text("KB: Kuzeybatı")
+//                }
+//            },
+//            confirmButton = {
+//                TextButton(onClick = { showDialog = false }) {
+//                    Text("Tamam")
+//                }
+//            },
+//            shape = RoundedCornerShape(50.dp),
+//            //containerColor = MaterialTheme.colorScheme.background,
+//            //modifier = Modifier.background(MaterialTheme.colorScheme.background)
+//
+//        )
+
+
+
+    CustomAlertDialog(
+        showDialog = showDialog,
+        onDismissRequest = { showDialog = false },
+        onConfirmation = { /* Handle confirmation */ },
+        dialogTitle = "Rüzgar Yönleri",
+        dialogText = "K: Kuzey\nKD: Kuzeydoğu\nD: Doğu\nGD: Güneydoğu\nG: Güney\nGB: Güneybatı\nB: Batı\nKB: Kuzeybatı",
+        icon = Icons.Default.Info // Örnek bir ikon
+    )
+
+    }
+
+
+
+    @Composable
+    fun CustomAlertDialog(
+        showDialog: Boolean,
+        onDismissRequest: () -> Unit,
+        onConfirmation: () -> Unit,
+        dialogTitle: String,
+        dialogText: String,
+        icon: ImageVector
+    ) {
+        if (showDialog) {
+            Dialog(onDismissRequest = { onDismissRequest() }) {
+                Box(
+                    modifier = Modifier
+                        .background(Color.Transparent) // Pencere arka planını şeffaf yapar
+) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .background(MaterialTheme.colorScheme.background, RoundedCornerShape(20.dp))
+                            .padding(16.dp)
+                    ) {
+                        Column {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Icon(
+                                    icon,
+                                    contentDescription = "Example Icon",
+                                    tint = MaterialTheme.colorScheme.primary, // İkon rengi
+                                    modifier = Modifier.size(24.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = dialogTitle,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = MaterialTheme.colorScheme.onBackground // Başlık rengi
+                                )
+                            }
+                            Text(
+                                text = dialogText,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onBackground // Metin rengi
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 8.dp),
+                                horizontalArrangement = Arrangement.End
+                            ) {
+                                TextButton(
+                                    onClick = {
+                                        onDismissRequest()
+                                    }
+                                ) {
+                                    Text("Tamam", color = MaterialTheme.colorScheme.primary) // Dismiss buton rengi
+                                }
+                            }
+                        }
+                    }
                 }
             }
-        )
+        }
     }
-}
