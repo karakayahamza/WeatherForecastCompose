@@ -1,7 +1,8 @@
 [versions]
 accompanistPermissions = "0.30.1"
-agp = "8.5.0"
+agp = "8.5.2"
 coilCompose = "2.4.0"
+composeCharts = "0.0.13"
 converterGson = "2.9.0"
 hiltAndroid = "2.49"
 hiltAndroidCompiler = "2.48"
@@ -12,10 +13,10 @@ coreKtx = "1.13.1"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
-kotlinxCoroutinesCore = "1.7.3"
-kotlinxCoroutinesAndroid = "1.7.3"
-lifecycleRuntimeKtx = "2.8.3"
-activityCompose = "1.9.0"
+kotlinxCoroutinesCore = "1.8.0"
+kotlinxCoroutinesAndroid = "1.8.0"
+lifecycleRuntimeKtx = "2.8.4"
+activityCompose = "1.9.1"
 composeBom = "2024.06.00"
 lottieCompose = "6.0.0"
 navigationFragmentKtx = "2.7.7"
@@ -24,13 +25,13 @@ rxandroid = "2.1.1"
 rxjava = "2.2.21"
 uiTestJunit4 = "1.6.8"
 viewpager2 = "1.1.0"
-workRuntimeKtxVersion = "2.9.0"
+workRuntimeKtxVersion = "2.9.1"
 uiTextGoogleFonts = "1.6.8"
 benchmarkCommon = "1.2.4"
-pagingCommonAndroid = "3.3.0"
+pagingCommonAndroid = "3.3.2"
 playServicesLocation = "21.3.0"
-appcompat = "1.6.1"
-material = "1.10.0"
+appcompat = "1.7.0"
+material = "1.12.0"
 activity = "1.9.1"
 constraintlayout = "2.1.4"
 
@@ -47,6 +48,7 @@ androidx-navigation-ui-ktx = { module = "androidx.navigation:navigation-ui-ktx",
 androidx-viewpager2 = { module = "androidx.viewpager2:viewpager2", version.ref = "viewpager2" }
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workRuntimeKtxVersion" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
+compose-charts = { module = "io.github.ehsannarmani:compose-charts", version.ref = "composeCharts" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroidCompiler" }
