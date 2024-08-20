@@ -65,10 +65,16 @@ fun MainTopAppBar(
                     Icon(Icons.Default.Info, contentDescription = "Info")
                 }
 
-                AnimatedDotIndicator(
-                    pagerState = pagerState,
-                    currentPlace = currentPlace
-                )
+                Box(
+                    modifier = Modifier
+                        .weight(1f),
+                    contentAlignment = Alignment.Center
+                ) {
+                    AnimatedDotIndicator(
+                        pagerState = pagerState,
+                        currentPlace = currentPlace,
+                    )
+                }
 
                 val iconState = remember { mutableStateOf(false) }
 
@@ -83,40 +89,8 @@ fun MainTopAppBar(
                     }
                 })
             }
-        },
+        }
     )
-
-
-
-
-//    if (showDialog) {
-//        AlertDialog(
-//            onDismissRequest = { showDialog = false },
-//            title = { Text("Rüzgar Yönleri") },
-//            text = {
-//                Column {
-//                    Text("K: Kuzey")
-//                    Text("KD: Kuzeydoğu")
-//                    Text("D: Doğu")
-//                    Text("GD: Güneydoğu")
-//                    Text("G: Güney")
-//                    Text("GB: Güneybatı")
-//                    Text("B: Batı")
-//                    Text("KB: Kuzeybatı")
-//                }
-//            },
-//            confirmButton = {
-//                TextButton(onClick = { showDialog = false }) {
-//                    Text("Tamam")
-//                }
-//            },
-//            shape = RoundedCornerShape(50.dp),
-//            //containerColor = MaterialTheme.colorScheme.background,
-//            //modifier = Modifier.background(MaterialTheme.colorScheme.background)
-//
-//        )
-
-
 
     CustomAlertDialog(
         showDialog = showDialog,
@@ -124,10 +98,9 @@ fun MainTopAppBar(
         onConfirmation = { /* Handle confirmation */ },
         dialogTitle = "Rüzgar Yönleri",
         dialogText = "K: Kuzey\nKD: Kuzeydoğu\nD: Doğu\nGD: Güneydoğu\nG: Güney\nGB: Güneybatı\nB: Batı\nKB: Kuzeybatı",
-        icon = Icons.Default.Info // Örnek bir ikon
+        icon = Icons.Default.Info
     )
-
-    }
+}
 
 
 
@@ -144,7 +117,7 @@ fun MainTopAppBar(
             Dialog(onDismissRequest = { onDismissRequest() }) {
                 Box(
                     modifier = Modifier
-                        .background(Color.Transparent) // Pencere arka planını şeffaf yapar
+                        .background(Color.Transparent)
 ) {
                     Box(
                         modifier = Modifier
@@ -163,20 +136,20 @@ fun MainTopAppBar(
                                 Icon(
                                     icon,
                                     contentDescription = "Example Icon",
-                                    tint = MaterialTheme.colorScheme.primary, // İkon rengi
+                                    tint = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.size(24.dp)
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
                                     text = dialogTitle,
                                     style = MaterialTheme.typography.titleMedium,
-                                    color = MaterialTheme.colorScheme.onBackground // Başlık rengi
+                                    color = MaterialTheme.colorScheme.onBackground
                                 )
                             }
                             Text(
                                 text = dialogText,
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onBackground // Metin rengi
+                                color = MaterialTheme.colorScheme.onBackground
                             )
                             Spacer(modifier = Modifier.height(16.dp))
                             Row(

@@ -10,7 +10,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -36,9 +39,11 @@ fun AnimatedDotIndicator(
     currentPlace: Pair<Double, Double>?
 ) {
     Row(
-        modifier = Modifier,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp), // Optional padding to ensure spacing from edges
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(10.dp)
+        horizontalArrangement = Arrangement.Center // Center the dots within the Row
     ) {
         repeat(pagerState.pageCount) { pageIndex ->
             val isSelected = pageIndex == pagerState.currentPage
@@ -56,7 +61,7 @@ fun AnimatedDotIndicator(
                     painter = painterResource(id = R.drawable.navigation),
                     contentDescription = "Current Location",
                     modifier = Modifier
-                        .size(18.dp)
+                        .size(18.dp) // Fixed size for the icon
                         .graphicsLayer(
                             scaleX = scale,
                             scaleY = scale
@@ -68,7 +73,7 @@ fun AnimatedDotIndicator(
             } else {
                 Box(
                     modifier = Modifier
-                        .size(10.dp)
+                        .size(12.dp)
                         .graphicsLayer(
                             scaleX = scale,
                             scaleY = scale
@@ -80,7 +85,7 @@ fun AnimatedDotIndicator(
                 )
             }
 
-            Spacer(modifier = Modifier.size(10.dp))
+            Spacer(modifier = Modifier.width(5.dp))
         }
     }
 }
