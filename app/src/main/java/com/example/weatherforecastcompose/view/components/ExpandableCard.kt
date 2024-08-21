@@ -2,6 +2,7 @@ package com.example.weatherforecastcompose.view.components
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -35,16 +36,20 @@ fun ExpandableCard(
     date: String, weather: Root
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val rotationAngle by animateFloatAsState(if (expanded) 45f else -45f, label = "")
+    val rotationAngle by animateFloatAsState(
+        targetValue = if (expanded) 45f else -45f,
+        animationSpec = tween(durationMillis = 300)
+    )
 
-
-    Card(modifier = Modifier
-        .clip(RoundedCornerShape(4.dp))
-        .animateContentSize()
-        .padding(4.dp)
-        .clickable(
-            interactionSource = remember { MutableInteractionSource() }, indication = null
-        ) { expanded = !expanded }) {
+    Card(
+        modifier = Modifier
+            .clip(RoundedCornerShape(4.dp))
+            .padding(4.dp)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null
+            ) { expanded = !expanded }
+    ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -80,7 +85,9 @@ fun ExpandableCard(
             }
 
             if (expanded) {
-                Column(modifier = Modifier.padding(start = 10.dp)) {
+                Column(
+                    modifier = Modifier.padding(start = 10.dp)
+                ) {
                     Text(
                         text = "Hissedilen: ${weather.main.feels_like.toInt()}°C", fontSize = 10.sp
                     )
@@ -101,6 +108,3 @@ fun ExpandableCard(
         }
     }
 }
-
-
-

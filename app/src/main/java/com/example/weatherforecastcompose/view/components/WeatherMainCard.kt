@@ -1,5 +1,6 @@
 package com.example.weatherforecastcompose.view.components
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -79,6 +80,7 @@ fun WeatherMainCard(
 
             currentTemp?.let { TemperatureInfo(currentTemp) }
 
+
             Text(
                 text = "Hissedilen: ${forecast?.get(0)?.main?.feels_like} °C",
                 fontSize = 12.sp,
@@ -92,11 +94,12 @@ fun WeatherMainCard(
     }
 }
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun TemperatureInfo(currentTemp: Double) {
     Row(modifier = Modifier.padding(bottom = 16.dp)) {
         Text(
-            text = currentTemp.toInt().toString(),
+            text = String.format("%.1f", currentTemp),
             fontSize = 45.sp,
             textAlign = TextAlign.Center
         )
@@ -108,33 +111,5 @@ fun TemperatureInfo(currentTemp: Double) {
                 .padding(top = 4.dp),
             textAlign = TextAlign.Start
         )
-    }
-}
-
-
-@Composable
-fun MinMaxTemperatureInfo(forecast: List<Root>?) {
-    Row(
-        verticalAlignment = Alignment.Top,
-        horizontalArrangement = Arrangement.SpaceEvenly,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-
-        Text(
-            text = "${forecast?.get(0)?.main?.temp_min}°",
-            fontSize = 21.sp,
-            color = min_Temp,
-            modifier = Modifier.padding(bottom = 8.dp),
-            textAlign = TextAlign.Center
-        )
-
-        Text(
-            text = "${forecast?.get(0)?.main?.temp_max}°",
-            fontSize = 21.sp,
-            color = max_Temp,
-            modifier = Modifier.padding(bottom = 8.dp),
-            textAlign = TextAlign.Center
-        )
-
     }
 }

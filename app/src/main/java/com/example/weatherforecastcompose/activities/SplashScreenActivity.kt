@@ -1,4 +1,4 @@
-package com.example.weatherforecastcompose
+package com.example.weatherforecastcompose.activities
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -20,6 +20,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
+import com.example.weatherforecastcompose.R
 import com.example.weatherforecastcompose.ui.theme.WeatherForecastComposeTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
@@ -62,7 +63,7 @@ fun SplashScreenContent(onSplashFinish: () -> Unit) {
             val screenHeight = LocalConfiguration.current.screenHeightDp.dp
             val imageSize = min(screenWidth, screenHeight) * 0.5f
             Image(
-                painter = painterResource(id = R.drawable.appicon),                 contentDescription = null,
+                painter = painterResource(id = R.drawable.appicon), contentDescription = null,
                 modifier = Modifier.size(imageSize)
             )
         }

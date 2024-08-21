@@ -7,7 +7,6 @@ import android.location.Location
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -33,9 +32,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import com.example.weatherforecastcompose.model.WeatherModel
 import com.example.weatherforecastcompose.repository.loadSelectedCities
@@ -44,13 +43,15 @@ import com.example.weatherforecastcompose.view.components.LoadingIndicator
 import com.example.weatherforecastcompose.view.components.MainTopAppBar
 import com.example.weatherforecastcompose.view.components.WeatherContent
 import com.example.weatherforecastcompose.view.components.WeatherRetryView
-import com.example.weatherforecastcompose.view.components.calculateCurrentOffsetForPage
 import com.example.weatherforecastcompose.viewmodel.WeatherViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
 import kotlinx.coroutines.launch
-import kotlin.math.absoluteValue
 
 @Composable
 fun WeatherMainScreen(viewModel: WeatherViewModel) {
@@ -84,7 +85,6 @@ fun WeatherMainScreen(viewModel: WeatherViewModel) {
         )
     }
 }
-
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -122,14 +122,12 @@ fun WeatherMainStructure(
                 viewModel = viewModel,
                 citiesWithCurrentWeather = citiesWithCurrentWeather,
                 pagerState = pagerState,
-                modifier = Modifier.padding(paddingValues)
+                modifier = Modifier
+                    .padding(paddingValues)
             )
         }
     )
-
-
 }
-
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -152,22 +150,15 @@ fun WeatherPager(
     HorizontalPager(
         state = pagerState,
         modifier = modifier.fillMaxSize(),
-        verticalAlignment = Alignment.Top
+        verticalAlignment = Alignment.Top,
+        userScrollEnabled = true,
+        pageSpacing = 0.dp,
+        beyondBoundsPageCount = 2
     ) { page ->
-        Box(
-            Modifier.graphicsLayer {
-                val pageOffset = pagerState.calculateCurrentOffsetForPage(page)
-                translationX = pageOffset * size.width
-                alpha = 1 - pageOffset.absoluteValue
-            }
-        ) {
-            val pageIdentifier = citiesWithCurrentWeather.getOrNull(page)
-            when (pageIdentifier) {
-                "currentWeather" -> WeatherCurrentContent(viewModel.currentWeatherData)
-                else -> {
-                    val cityName = pageIdentifier
-                    cityName?.let { WeatherPageContent(viewModel, it) }
-                }
+        when (val pageIdentifier = citiesWithCurrentWeather.getOrNull(page)) {
+            "currentWeather" -> WeatherCurrentContent(viewModel.currentWeatherData)
+            else -> {
+                pageIdentifier?.let { WeatherPageContent(viewModel, it) }
             }
         }
     }
@@ -228,14 +219,12 @@ fun RequestLocationPermission(context: Context, onLocationRetrieved: (Location?)
     }
 
     if (permissionState.allPermissionsGranted) {
-        val locationRequest = com.google.android.gms.location.LocationRequest.create().apply {
-            interval = 10000
-            fastestInterval = 5000
-            priority = com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY
-        }
+        val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 10000L)
+            .setMinUpdateIntervalMillis(5000L)
+            .build()
 
-        val locationCallback = object : com.google.android.gms.location.LocationCallback() {
-            override fun onLocationResult(locationResult: com.google.android.gms.location.LocationResult) {
+        val locationCallback = object : LocationCallback() {
+            override fun onLocationResult(locationResult: LocationResult) {
                 super.onLocationResult(locationResult)
                 locationResult.locations.firstOrNull()?.let { onLocationRetrieved(it) }
             }
@@ -256,7 +245,7 @@ fun RequestLocationPermission(context: Context, onLocationRetrieved: (Location?)
                 onLocationRetrieved(location ?: run {
                     Toast.makeText(
                         context,
-                        "GPS kapalı yada lokasyon verisi kullanılamıyor. Lütfen konumu servsini açınız.",
+                        "GPS kapalı veya konum verisi kullanılamıyor. Lütfen konum servisini açınız.",
                         Toast.LENGTH_LONG
                     ).show()
                     null
@@ -293,7 +282,7 @@ fun LocationScreen(
         } ?: run {
             Toast.makeText(
                 context,
-                "GPS is turned off or location not available",
+                "GPS kapalı veya konum mevcut değil",
                 Toast.LENGTH_LONG
             ).show()
         }

@@ -19,13 +19,12 @@ fun WeatherContent(
     currentTemp: Double?,
     forecast: WeatherModel?,
 ) {
-    // Create a scroll state
     val scrollState = rememberScrollState()
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(scrollState),  // Apply vertical scrolling
+            .verticalScroll(scrollState),
         verticalArrangement = Arrangement.SpaceEvenly,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -40,10 +39,9 @@ fun WeatherContent(
             SunriseSunsetInfo(it.city.sunrise, it.city.sunset)
             WeatherHourlyDetailsCard(it.list)
 
-            // Make sure the chart fits and is scrollable
-            Spacer(modifier = Modifier.height(16.dp)) // Add some space before the chart
+            Spacer(modifier = Modifier.height(16.dp))
             TemperatureGraph(it.list.take(5).map { item -> item.main.temp })
-            Spacer(modifier = Modifier.height(16.dp)) // Add some space before the chart
+            Spacer(modifier = Modifier.height(16.dp))
 
         }
     }

@@ -1,4 +1,4 @@
-package com.example.weatherforecastcompose
+package com.example.weatherforecastcompose.activities
 
 import android.os.Build
 import android.os.Bundle

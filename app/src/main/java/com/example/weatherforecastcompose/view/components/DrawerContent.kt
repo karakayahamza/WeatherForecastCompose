@@ -47,13 +47,12 @@ fun DrawerContent(
         onDrawerClosed()
     }
 
-    // Get screen width for responsive design
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
 
     ModalDrawerSheet(
         modifier = Modifier
-            .widthIn(min = 280.dp, max = screenWidth * 0.8f) // Responsive width, up to 80% of screen width
+            .widthIn(min = 280.dp, max = screenWidth * 0.8f)
             .fillMaxHeight(),
         drawerContainerColor = MaterialTheme.colorScheme.background.copy(alpha = 0.9f)
     ) {
@@ -65,7 +64,7 @@ fun DrawerContent(
             onValueChange = onSearchQueryChange,
             placeholder = { Text("Ara..") },
             modifier = Modifier
-                .fillMaxWidth(0.9f) // 90% of drawer width
+                .fillMaxWidth(0.9f)
                 .padding(horizontal = 16.dp, vertical = 8.dp),
             textStyle = MaterialTheme.typography.bodyLarge,
             singleLine = true,
@@ -86,7 +85,7 @@ fun DrawerContent(
 
         LazyColumn(
             modifier = Modifier
-                .fillMaxWidth(0.9f) // 90% of drawer width
+                .fillMaxWidth(0.9f)
         ) {
             items(selectedCities) { cityName ->
                 CheckboxList(cityName, selectedCities, context = context)
@@ -111,7 +110,7 @@ fun DrawerContent(
             text = "Created by hkarakaya",
             modifier = Modifier
                 .padding(16.dp)
-                .wrapContentWidth(), // Wrap content width for the text
+                .wrapContentWidth(),
             color = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
         )
     }
