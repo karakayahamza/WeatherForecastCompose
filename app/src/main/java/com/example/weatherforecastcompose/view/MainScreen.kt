@@ -1,28 +1,18 @@
 package com.example.weatherforecastcompose.view
 
-import android.Manifest
-import android.content.Context
-import android.content.pm.PackageManager
-import android.location.Location
-import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.Button
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -35,22 +25,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
-import androidx.core.app.ActivityCompat
 import com.example.weatherforecastcompose.model.WeatherModel
 import com.example.weatherforecastcompose.repository.loadSelectedCities
 import com.example.weatherforecastcompose.view.components.DrawerContent
 import com.example.weatherforecastcompose.view.components.LoadingIndicator
+import com.example.weatherforecastcompose.view.components.LocationInfoScreen
 import com.example.weatherforecastcompose.view.components.MainTopAppBar
 import com.example.weatherforecastcompose.view.components.WeatherContent
 import com.example.weatherforecastcompose.view.components.WeatherRetryView
 import com.example.weatherforecastcompose.viewmodel.WeatherViewModel
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationResult
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.Priority
 import kotlinx.coroutines.launch
 
 @Composable
@@ -63,7 +46,7 @@ fun WeatherMainScreen(viewModel: WeatherViewModel) {
 
     selectedCities.addAll(loadSelectedCities(context).filterNot { it in selectedCities })
 
-    LocationScreen(context, viewModel, currentPlace)
+    LocationInfoScreen(context, viewModel, currentPlace)
 
     ModalNavigationDrawer(drawerState = drawerState, drawerContent = {
         DrawerContent(
@@ -83,6 +66,7 @@ fun WeatherMainScreen(viewModel: WeatherViewModel) {
             drawerState = drawerState,
             currentPlace = currentPlace.value
         )
+
     }
 }
 
@@ -153,7 +137,7 @@ fun WeatherPager(
         verticalAlignment = Alignment.Top,
         userScrollEnabled = true,
         pageSpacing = 0.dp,
-        beyondBoundsPageCount = 2
+        beyondBoundsPageCount = 3
     ) { page ->
         when (val pageIdentifier = citiesWithCurrentWeather.getOrNull(page)) {
             "currentWeather" -> WeatherCurrentContent(viewModel.currentWeatherData)
@@ -179,112 +163,35 @@ fun WeatherCurrentContent(weatherData: WeatherModel?) {
 
 @Composable
 fun WeatherPageContent(viewModel: WeatherViewModel, city: String) {
-    LaunchedEffect(city) {
-        if (viewModel.weatherData[city] == null) {
-            viewModel.loadWeather(city)
+    val (cityName, district) = city.split(",").let {
+        if (it.size > 1) {
+            it[1].trim() to it[0].trim()
+        } else {
+            it[0].trim() to ""
         }
     }
 
-    val weatherState = viewModel.weatherData[city]
-    val errorMessage = viewModel.errorMessages[city] ?: ""
-    val isLoading = viewModel.isLoading[city] ?: false
+    val location = district.ifEmpty { cityName }
+
+    LaunchedEffect(location) {
+        if (viewModel.weatherData[location] == null) {
+            viewModel.loadWeather(location)
+        }
+    }
+
+    val weatherState = viewModel.weatherData[location]
+    val errorMessage = viewModel.errorMessages[location] ?: ""
+    val isLoading = viewModel.isLoading[location] ?: false
 
     when {
         isLoading -> LoadingIndicator()
         errorMessage.isNotEmpty() && weatherState == null -> WeatherRetryView(error = errorMessage) {
-            viewModel.loadWeather(city)
+            viewModel.loadWeather(location)
         }
 
         weatherState != null -> WeatherContent(
             currentTemp = weatherState.list.firstOrNull()?.main?.temp,
             forecast = weatherState,
         )
-    }
-}
-
-@OptIn(ExperimentalPermissionsApi::class)
-@Composable
-fun RequestLocationPermission(context: Context, onLocationRetrieved: (Location?) -> Unit) {
-    val permissionState = rememberMultiplePermissionsState(
-        permissions = listOf(
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION
-        )
-    )
-
-    val locationClient = LocationServices.getFusedLocationProviderClient(context)
-
-    LaunchedEffect(Unit) {
-        permissionState.launchMultiplePermissionRequest()
-    }
-
-    if (permissionState.allPermissionsGranted) {
-        val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 10000L)
-            .setMinUpdateIntervalMillis(5000L)
-            .build()
-
-        val locationCallback = object : LocationCallback() {
-            override fun onLocationResult(locationResult: LocationResult) {
-                super.onLocationResult(locationResult)
-                locationResult.locations.firstOrNull()?.let { onLocationRetrieved(it) }
-            }
-        }
-
-        locationClient.requestLocationUpdates(locationRequest, locationCallback, null)
-
-        if (ActivityCompat.checkSelfPermission(
-                context,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED &&
-            ActivityCompat.checkSelfPermission(
-                context,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            locationClient.lastLocation.addOnSuccessListener { location ->
-                onLocationRetrieved(location ?: run {
-                    Toast.makeText(
-                        context,
-                        "GPS kapalı veya konum verisi kullanılamıyor. Lütfen konum servisini açınız.",
-                        Toast.LENGTH_LONG
-                    ).show()
-                    null
-                })
-            }
-        }
-    } else {
-        Column {
-            Text("Lokasyon izni gerekli.")
-            Button(onClick = { permissionState.launchMultiplePermissionRequest() }) {
-                Text("İzin Ver.")
-            }
-        }
-    }
-}
-
-@Composable
-fun LocationScreen(
-    context: Context,
-    viewModel: WeatherViewModel,
-    currentPlace: MutableState<Pair<Double, Double>?>
-) {
-    RequestLocationPermission(context) { location ->
-        location?.let {
-            val (lat, lon) = it.latitude to it.longitude
-            val newPlace = lat to lon
-
-            if (currentPlace.value != newPlace) {
-                currentPlace.value = newPlace
-                viewModel.loadCurrentWeather(lat.toString(), lon.toString())
-            } else {
-                Log.d("LocationScreen", "Location already present: $newPlace")
-            }
-        } ?: run {
-            Toast.makeText(
-                context,
-                "GPS kapalı veya konum mevcut değil",
-                Toast.LENGTH_LONG
-            ).show()
-        }
     }
 }

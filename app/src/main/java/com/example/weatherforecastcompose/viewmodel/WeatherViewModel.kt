@@ -14,6 +14,7 @@ import com.example.weatherforecastcompose.util.Resource
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.IOException
 import javax.inject.Inject
@@ -23,9 +24,6 @@ class WeatherViewModel @Inject constructor(
     private val repository: WeatherRepository,
     private val currentRepository: CurrentWeatherRepository
 ) : ViewModel() {
-
-//    private val _selectedCities = mutableStateListOf<String>()
-//    val selectedCities: List<String> get() = _selectedCities
 
     private val _weatherData = mutableStateMapOf<String, WeatherModel?>()
     val weatherData: Map<String, WeatherModel?> get() = _weatherData
@@ -39,18 +37,15 @@ class WeatherViewModel @Inject constructor(
     private val _currentWeatherData = mutableStateOf<WeatherModel?>(null)
     val currentWeatherData: WeatherModel? get() = _currentWeatherData.value
 
-    private val _currentCityName = mutableStateOf<String?>(null)
-    val currentCityName: String? get() = _currentCityName.value
 
     fun loadWeather(cityName: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             _isLoading[cityName] = true
             when (val result = repository.getWeatherList(cityName)) {
                 is Resource.Success -> {
                     _weatherData[cityName] = result.data
                     _errorMessages[cityName] = ""
                 }
-
                 is Resource.Error -> {
                     _errorMessages[cityName] = result.message ?: "Unknown error"
                 }
@@ -67,8 +62,6 @@ class WeatherViewModel @Inject constructor(
             when (val result = currentRepository.getCurrentWeatherList(lat, lon)) {
                 is Resource.Success -> {
                     _currentWeatherData.value = result.data
-                    // Set city name from the response data
-                    _currentCityName.value = result.data?.city?.name
                 }
 
                 is Resource.Error -> {

@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Base application theme -->
-    <style name="Theme.WeatherForecastCompose" parent="Theme.AppCompat.NoActionBar">
+    <style name="Theme.WeatherForecastCompose" parent="android:Theme.Material.Light.NoActionBar">
         <!-- Primary colors and other attributes -->
 
-        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowIsTranslucent">false</item>
         <item name="android:windowBackground">@android:color/transparent</item>
         <!-- Other attributes -->
     </style>
 
     <!-- Splash screen theme -->
-    <style name="Theme.SplashScreen" parent="Theme.AppCompat.NoActionBar">
+    <style name="Theme.SplashScreen" parent="android:Theme.Material.Light.NoActionBar">
         <!-- Custom splash screen background color -->
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>

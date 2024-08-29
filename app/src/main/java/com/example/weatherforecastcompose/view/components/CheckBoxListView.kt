@@ -43,6 +43,7 @@ fun CheckboxList(item: String, selectedItems: MutableList<String>, context: Cont
                 } else {
                     selectedItems.remove(item)
                 }
+                println("selectedItems: ${item}")
                 saveSelectedCities(selectedItems, context)
             }, modifier = Modifier.padding(end = 16.dp)
         )
