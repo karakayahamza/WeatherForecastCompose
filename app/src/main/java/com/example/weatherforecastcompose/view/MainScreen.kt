@@ -163,30 +163,28 @@ fun WeatherCurrentContent(weatherData: WeatherModel?) {
 
 @Composable
 fun WeatherPageContent(viewModel: WeatherViewModel, city: String) {
-    val (cityName, district) = city.split(",").let {
+    val formattedCityName = city.split(",").let {
         if (it.size > 1) {
-            it[1].trim() to it[0].trim()
+            "${it[1].trim()}, ${it[0].trim()}"
         } else {
-            it[0].trim() to ""
+            it[0].trim()
         }
     }
 
-    val location = district.ifEmpty { cityName }
-
-    LaunchedEffect(location) {
-        if (viewModel.weatherData[location] == null) {
-            viewModel.loadWeather(location)
+    LaunchedEffect(formattedCityName) {
+        if (viewModel.weatherData[formattedCityName] == null) {
+            viewModel.loadWeather(formattedCityName)
         }
     }
 
-    val weatherState = viewModel.weatherData[location]
-    val errorMessage = viewModel.errorMessages[location] ?: ""
-    val isLoading = viewModel.isLoading[location] ?: false
+    val weatherState = viewModel.weatherData[formattedCityName]
+    val errorMessage = viewModel.errorMessages[formattedCityName] ?: ""
+    val isLoading = viewModel.isLoading[formattedCityName] ?: false
 
     when {
         isLoading -> LoadingIndicator()
         errorMessage.isNotEmpty() && weatherState == null -> WeatherRetryView(error = errorMessage) {
-            viewModel.loadWeather(location)
+            viewModel.loadWeather(formattedCityName)
         }
 
         weatherState != null -> WeatherContent(

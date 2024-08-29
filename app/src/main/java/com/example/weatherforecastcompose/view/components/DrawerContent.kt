@@ -22,6 +22,7 @@ import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
@@ -43,6 +44,13 @@ fun DrawerContent(
     onDrawerClosed: @Composable () -> Unit
 ) {
     val cityNames = viewModel.getDistrictNames(context)
+
+    LaunchedEffect(drawerState.isClosed) {
+        if (drawerState.isClosed) {
+            onSearchQueryChange("")
+        }
+    }
+
     if (drawerState.isClosed) {
         onDrawerClosed()
     }
