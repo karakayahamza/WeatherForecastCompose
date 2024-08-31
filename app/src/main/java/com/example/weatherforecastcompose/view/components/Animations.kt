@@ -20,30 +20,11 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
+import com.example.weatherforecastcompose.WeatherType
 
 @Composable
-fun LottieWeatherAnimationView(animationCode: String,modifier: Modifier) {
-    val animationFile = when (animationCode) {
-        "01d" -> "day_clear.json"
-        "01n" -> "night_clear.json"
-        "02d" -> "day_partly_cloudy.json"
-        "02n" -> "night_partly_cloudly.json"
-        "03d" -> "night_cloudly.json"
-        "03n" -> "night_cloudly.json"
-        "04d" -> "night_cloudly.json"
-        "04n" -> "night_cloudly.json"
-        "09d" -> "day_rainy.json"
-        "09n" -> "night_rainy.json"
-        "10d" -> "day_rainy.json"
-        "10n" -> "night_rainy.json"
-        "11d" -> "day_thunder_rainy.json"
-        "11n" -> "night_thunder_rainy.json"
-        "13d" -> "day_snowy.json"
-        "13n" -> "night_snowy.json"
-        "50d" -> "day_foggy.json"
-        "50n" -> "night_foggy.json"
-        else -> "day_clear.json"
-    }
+fun LottieWeatherAnimationView(weatherCode: String, modifier: Modifier = Modifier) {
+    val animationFile = mapWeatherCodeToJsonFile(weatherCode)
 
     val composition by rememberLottieComposition(LottieCompositionSpec.Asset(animationFile))
     val progress by animateLottieCompositionAsState(
@@ -59,13 +40,34 @@ fun LottieWeatherAnimationView(animationCode: String,modifier: Modifier) {
     )
 }
 
+fun mapWeatherCodeToJsonFile(weatherCode: String): String {
+    return when (weatherCode) {
+        "01d" -> WeatherType.CLEAR_DAY.jsonFile
+        "01n" -> WeatherType.CLEAR_NIGHT.jsonFile
+        "02d" -> WeatherType.PARTLY_CLOUDY_DAY.jsonFile
+        "02n" -> WeatherType.PARTLY_CLOUDY_NIGHT.jsonFile
+        "03d", "03n", "04d", "04n" -> WeatherType.CLOUDY_NIGHT.jsonFile
+        "09d", "10d" -> WeatherType.RAINY_DAY.jsonFile
+        "09n", "10n" -> WeatherType.RAINY_NIGHT.jsonFile
+        "11d" -> WeatherType.THUNDER_DAY.jsonFile
+        "11n" -> WeatherType.THUNDER_NIGHT.jsonFile
+        "13d" -> WeatherType.SNOWY_DAY.jsonFile
+        "13n" -> WeatherType.SNOWY_NIGHT.jsonFile
+        "50d" -> WeatherType.FOGGY_DAY.jsonFile
+        "50n" -> WeatherType.FOGGY_NIGHT.jsonFile
+        else -> WeatherType.CLEAR_DAY.jsonFile
+    }
+}
+
 @Composable
 fun AnimatedNavDrawerMenuButton(isOpen: Boolean, onToggle: () -> Unit) {
-    val transitionSpec = tween<Float>(durationMillis = 100, easing = LinearOutSlowInEasing)
-
     val rotationAngle by animateFloatAsState(
         targetValue = if (isOpen) 90f else 0f,
-        animationSpec = transitionSpec, label = ""
+        animationSpec = tween(
+            durationMillis = 100,
+            easing = LinearOutSlowInEasing
+        ),
+        label = ""
     )
 
     IconButton(onClick = onToggle) {
@@ -75,9 +77,4 @@ fun AnimatedNavDrawerMenuButton(isOpen: Boolean, onToggle: () -> Unit) {
             modifier = Modifier.graphicsLayer(rotationZ = rotationAngle)
         )
     }
-}
-
-@OptIn(ExperimentalFoundationApi::class)
-fun PagerState.calculateCurrentOffsetForPage(page: Int): Float {
-    return (currentPage - page) + currentPageOffsetFraction
 }
