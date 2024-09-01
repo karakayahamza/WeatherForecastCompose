@@ -11,7 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.weatherforecastcompose.model.Root
+import com.example.weatherforecastcompose.model.WeatherModel.Root
 import com.example.weatherforecastcompose.util.DateUtils.formatDate
 
 @Composable

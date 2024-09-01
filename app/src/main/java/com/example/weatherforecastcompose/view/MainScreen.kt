@@ -25,7 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
-import com.example.weatherforecastcompose.model.WeatherModel
+import com.example.weatherforecastcompose.model.WeatherModel.WeatherModel
 import com.example.weatherforecastcompose.repository.loadSelectedCities
 import com.example.weatherforecastcompose.view.components.DrawerContent
 import com.example.weatherforecastcompose.view.components.LoadingIndicator
@@ -39,7 +39,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun WeatherMainScreen(viewModel: WeatherViewModel) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    var searchQuery by remember { mutableStateOf("") }
+    var searchQuery: String by remember { mutableStateOf("") }
     val context = LocalContext.current
     val selectedCities = remember { mutableStateListOf<String>() }
     val currentPlace = remember { mutableStateOf<Pair<Double, Double>?>(null) }

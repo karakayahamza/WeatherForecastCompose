@@ -18,9 +18,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.weatherforecastcompose.model.Root
-import com.example.weatherforecastcompose.ui.theme.max_Temp
-import com.example.weatherforecastcompose.ui.theme.min_Temp
+import com.example.weatherforecastcompose.model.WeatherModel.Root
 import com.example.weatherforecastcompose.util.DateUtils.formatDate
 
 @Composable

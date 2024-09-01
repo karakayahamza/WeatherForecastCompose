@@ -1,6 +1,6 @@
 package com.example.weatherforecastcompose.repository
 
-import com.example.weatherforecastcompose.model.WeatherModel
+import com.example.weatherforecastcompose.model.WeatherModel.WeatherModel
 import com.example.weatherforecastcompose.service.WeatherAPI
 import com.example.weatherforecastcompose.service.WeatherAPICurrentLocation
 import com.example.weatherforecastcompose.util.Constants

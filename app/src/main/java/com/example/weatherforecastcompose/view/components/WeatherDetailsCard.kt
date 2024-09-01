@@ -19,7 +19,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.weatherforecastcompose.model.Root
+import com.example.weatherforecastcompose.model.WeatherModel.Root
 import com.example.weatherforecastcompose.util.getWindDirection
 
 @Composable

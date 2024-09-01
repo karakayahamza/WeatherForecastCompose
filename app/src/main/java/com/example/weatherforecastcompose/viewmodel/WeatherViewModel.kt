@@ -6,8 +6,8 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.weatherforecastcompose.model.CityList
-import com.example.weatherforecastcompose.model.WeatherModel
+import com.example.weatherforecastcompose.model.WeatherModel.CityList
+import com.example.weatherforecastcompose.model.WeatherModel.WeatherModel
 import com.example.weatherforecastcompose.repository.CurrentWeatherRepository
 import com.example.weatherforecastcompose.repository.WeatherRepository
 import com.example.weatherforecastcompose.util.Resource
