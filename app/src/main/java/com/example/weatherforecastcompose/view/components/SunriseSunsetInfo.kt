@@ -19,7 +19,7 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.example.weatherforecastcompose.util.DateUtils.formatTime
+import com.example.weatherforecastcompose.utils.DateUtils.formatTime
 
 @Composable
 fun SunriseSunsetInfo(sunrise: Long, sunset: Long) {

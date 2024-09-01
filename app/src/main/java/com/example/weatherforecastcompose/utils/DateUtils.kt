@@ -1,4 +1,4 @@
-package com.example.weatherforecastcompose.util
+package com.example.weatherforecastcompose.utils
 
 import android.annotation.SuppressLint
 import java.text.SimpleDateFormat

@@ -1,4 +1,4 @@
-package com.example.weatherforecastcompose.util
+package com.example.weatherforecastcompose.utils
 import android.location.Location
 
 fun distanceBetween(start: Pair<Double, Double>, end: Pair<Double, Double>): Float {

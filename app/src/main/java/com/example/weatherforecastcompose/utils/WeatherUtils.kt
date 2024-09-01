@@ -1,4 +1,4 @@
-package com.example.weatherforecastcompose.util
+package com.example.weatherforecastcompose.utils
 
 fun getWindDirection(degrees: Int): String {
     return when (degrees) {

@@ -10,7 +10,7 @@ import com.example.weatherforecastcompose.model.WeatherModel.CityList
 import com.example.weatherforecastcompose.model.WeatherModel.WeatherModel
 import com.example.weatherforecastcompose.repository.CurrentWeatherRepository
 import com.example.weatherforecastcompose.repository.WeatherRepository
-import com.example.weatherforecastcompose.util.Resource
+import com.example.weatherforecastcompose.utils.Resource
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,6 +24,7 @@ class WeatherViewModel @Inject constructor(
     private val repository: WeatherRepository,
     private val currentRepository: CurrentWeatherRepository
 ) : ViewModel() {
+
 
     private val _weatherData = mutableStateMapOf<String, WeatherModel?>()
     val weatherData: Map<String, WeatherModel?> get() = _weatherData
@@ -46,6 +47,7 @@ class WeatherViewModel @Inject constructor(
                     _weatherData[cityName] = result.data
                     _errorMessages[cityName] = ""
                 }
+
                 is Resource.Error -> {
                     _errorMessages[cityName] = result.message ?: "Unknown error"
                 }

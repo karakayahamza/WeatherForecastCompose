@@ -13,7 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.core.app.ActivityCompat
-import com.example.weatherforecastcompose.util.distanceBetween
+import com.example.weatherforecastcompose.utils.distanceBetween
 import com.example.weatherforecastcompose.viewmodel.WeatherViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState

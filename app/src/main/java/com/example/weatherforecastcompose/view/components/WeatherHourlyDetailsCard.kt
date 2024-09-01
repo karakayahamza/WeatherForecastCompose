@@ -12,7 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.weatherforecastcompose.model.WeatherModel.Root
-import com.example.weatherforecastcompose.util.DateUtils.formatDate
+import com.example.weatherforecastcompose.utils.DateUtils.formatDate
 
 @Composable
 fun WeatherHourlyDetailsCard(forecast: List<Root>) {

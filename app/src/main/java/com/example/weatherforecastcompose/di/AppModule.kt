@@ -4,7 +4,7 @@ import com.example.weatherforecastcompose.repository.CurrentWeatherRepository
 import com.example.weatherforecastcompose.repository.WeatherRepository
 import com.example.weatherforecastcompose.service.WeatherAPI
 import com.example.weatherforecastcompose.service.WeatherAPICurrentLocation
-import com.example.weatherforecastcompose.util.Constants.BASE_URL
+import com.example.weatherforecastcompose.utils.Constants.BASE_URL
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
