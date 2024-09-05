@@ -19,12 +19,12 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.example.weatherforecastcompose.utils.DateUtils.formatTime
+import com.example.weatherforecastcompose.utils.WeatherUtils
 
 @Composable
 fun SunriseSunsetInfo(sunrise: Long, sunset: Long) {
-    val sunriseTime = formatTime(sunrise)
-    val sunsetTime = formatTime(sunset)
+    val sunriseTime = WeatherUtils.formatTime(sunrise)
+    val sunsetTime = WeatherUtils.formatTime(sunset)
 
     Row(
         modifier = Modifier

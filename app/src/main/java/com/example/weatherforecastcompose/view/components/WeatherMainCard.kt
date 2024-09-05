@@ -19,7 +19,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.weatherforecastcompose.model.WeatherModel.Root
-import com.example.weatherforecastcompose.utils.DateUtils.formatDate
+import com.example.weatherforecastcompose.utils.WeatherUtils
 
 @Composable
 fun WeatherMainCard(
@@ -49,7 +49,7 @@ fun WeatherMainCard(
             )
 
             Text(
-                text = formatDate(forecast?.get(0)?.dt_txt ?: "-").first,
+                text = WeatherUtils.formatDate(forecast?.get(0)?.dt_txt ?: "-").first,
                 fontSize = 12.sp,
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center,

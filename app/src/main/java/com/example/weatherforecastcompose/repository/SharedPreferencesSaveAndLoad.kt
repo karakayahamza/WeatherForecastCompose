@@ -16,5 +16,4 @@ fun loadSelectedCities(context: Context): List<String> {
     val sharedPreferences = context.getSharedPreferences("selected_cities", Context.MODE_PRIVATE)
     val json = sharedPreferences.getString("cities", null)
     return Gson().fromJson(json, object : TypeToken<List<String>>() {}.type) ?: emptyList()
-
 }

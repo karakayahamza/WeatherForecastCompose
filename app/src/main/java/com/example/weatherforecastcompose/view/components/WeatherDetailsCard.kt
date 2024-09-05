@@ -20,7 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.weatherforecastcompose.model.WeatherModel.Root
-import com.example.weatherforecastcompose.utils.getWindDirection
+import com.example.weatherforecastcompose.utils.WeatherUtils
 
 @Composable
 fun WeatherDetailsCard(
@@ -54,7 +54,7 @@ fun WeatherDetailsCard(
 
                 WeatherDetailItem(
                     iconResource = windResource,
-                    value = "${forecast?.get(0)?.wind?.deg?.let { getWindDirection(it) }},${
+                    value = "${forecast?.get(0)?.wind?.deg?.let { WeatherUtils.getWindDirection(it) }},${
                         forecast?.get(
                             0
                         )?.wind?.speed?.toInt()

@@ -1,9 +1,8 @@
 package com.example.weatherforecastcompose.repository
 
+import com.example.weatherforecastcompose.BuildConfig
 import com.example.weatherforecastcompose.model.WeatherModel.WeatherModel
 import com.example.weatherforecastcompose.service.WeatherAPI
-import com.example.weatherforecastcompose.service.WeatherAPICurrentLocation
-import com.example.weatherforecastcompose.utils.Constants
 import com.example.weatherforecastcompose.utils.Resource
 import dagger.hilt.android.scopes.ActivityScoped
 import javax.inject.Inject
@@ -12,24 +11,20 @@ import javax.inject.Inject
 class WeatherRepository @Inject constructor(
     private val api: WeatherAPI
 ) {
-    suspend fun getWeatherList(name: String): Resource<WeatherModel> {
+    private val apiKey = BuildConfig.API_KEY
+    suspend fun getWeatherListByCity(name: String): Resource<WeatherModel> {
         return try {
-            val response = api.getData(name, Constants.API_KEY, "metric")
+            val response = api.getDataByCity(name, apiKey, "metric")
             Resource.Success(response)
         } catch (e: Exception) {
             println("Error: ${e.message}")
             Resource.Error("Error.")
         }
     }
-}
 
-@ActivityScoped
-class CurrentWeatherRepository @Inject constructor(
-    private val api: WeatherAPICurrentLocation
-) {
-    suspend fun getCurrentWeatherList(lat: String, lon: String): Resource<WeatherModel> {
+    suspend fun getWeatherListByCoordinates(lat: String, lon: String): Resource<WeatherModel> {
         return try {
-            val response = api.getCurrentData(lat, lon, Constants.API_KEY)
+            val response = api.getDataByCoordinates(lat, lon, apiKey)
             Resource.Success(response)
         } catch (e: Exception) {
             println("Error: ${e.message}")

@@ -1,10 +1,8 @@
 package com.example.weatherforecastcompose.di
 
-import com.example.weatherforecastcompose.repository.CurrentWeatherRepository
+import com.example.weatherforecastcompose.BuildConfig.BASE_URL
 import com.example.weatherforecastcompose.repository.WeatherRepository
 import com.example.weatherforecastcompose.service.WeatherAPI
-import com.example.weatherforecastcompose.service.WeatherAPICurrentLocation
-import com.example.weatherforecastcompose.utils.Constants.BASE_URL
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -12,7 +10,6 @@ import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
-
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -37,17 +34,5 @@ class AppModule {
     @Provides
     fun provideWeatherRepository(api: WeatherAPI): WeatherRepository {
         return WeatherRepository(api)
-    }
-
-    @Singleton
-    @Provides
-    fun provideCurrentWeatherApi(retrofit: Retrofit): WeatherAPICurrentLocation {
-        return retrofit.create(WeatherAPICurrentLocation::class.java)
-    }
-
-    @Singleton
-    @Provides
-    fun provideCurrentWeatherRepository(api: WeatherAPICurrentLocation): CurrentWeatherRepository {
-        return CurrentWeatherRepository(api)
     }
 }

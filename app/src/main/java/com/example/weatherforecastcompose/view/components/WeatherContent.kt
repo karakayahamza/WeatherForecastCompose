@@ -12,7 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.weatherforecastcompose.model.WeatherModel.WeatherModel
-import com.example.weatherforecastcompose.ui.weatherResources
+import com.example.weatherforecastcompose.ui.WeatherResources
 
 @Composable
 fun WeatherContent(
@@ -31,9 +31,9 @@ fun WeatherContent(
         forecast?.let {
             WeatherMainCard(forecast.city.name, currentTemp, it.list)
             WeatherDetailsCard(
-                humidityResource = weatherResources().humidityResource,
-                windResource = weatherResources().windResource,
-                pressureResource = weatherResources().pressureResource,
+                humidityResource = WeatherResources.getWeatherResources().humidityResource,
+                windResource = WeatherResources.getWeatherResources().windResource,
+                pressureResource = WeatherResources.getWeatherResources().pressureResource,
                 forecast = forecast.list
             )
             SunriseSunsetInfo(it.city.sunrise, it.city.sunset)

@@ -1,9 +1,18 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
-    id("kotlin-kapt")
-    id("com.google.dagger.hilt.android")
+    kotlin("kapt")
+    id("dagger.hilt.android.plugin")
 }
+
+val localProperties = Properties().apply {
+    load(rootProject.file("local.properties").inputStream())
+}
+
+val apiKey: String = localProperties.getProperty("API_KEY") ?: ""
+val baseUrl: String = localProperties.getProperty("BASE_URL") ?: ""
 
 android {
     namespace = "com.example.weatherforecastcompose"
@@ -12,6 +21,7 @@ android {
     defaultConfig {
         applicationId = "com.example.weatherforecastcompose"
         minSdk = 26
+        //noinspection OldTargetApi
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -20,6 +30,9 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+        buildConfigField("String", "API_KEY", "\"$apiKey\"")
+        buildConfigField("String", "BASE_URL", "\"$baseUrl\"")
+
     }
 
     buildTypes {
@@ -49,8 +62,10 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    buildFeatures {
+        buildConfig = true
+    }
 }
-val nav_version = "2.7.7"
 dependencies {
 
     implementation(libs.androidx.core.ktx)
@@ -70,7 +85,7 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     testImplementation(libs.junit)
-    androidTestImplementation (libs.ui.test.junit4)
+    androidTestImplementation(libs.ui.test.junit4)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.ui.test.junit4)
@@ -80,16 +95,10 @@ dependencies {
 
     // Dagger - Hilt
     implementation(libs.hilt.android)
-    kapt(libs.hilt.android.compiler)
+    kapt(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.hilt.work)
     implementation(libs.androidx.work.runtime.ktx)
-
-    implementation(libs.androidx.navigation.fragment.ktx)
-    implementation(libs.androidx.navigation.ui.ktx)
-
-    // Testing Navigation
-    androidTestImplementation(libs.androidx.navigation.testing)
 
     // Jetpack Compose Integration
     implementation(libs.androidx.navigation.compose)
@@ -100,23 +109,29 @@ dependencies {
     implementation(libs.retrofit.v290)
     implementation(libs.converter.gson)
     implementation(libs.adapter.rxjava2)
-    implementation(libs.rxjava)
-    implementation(libs.rxandroid)
+
 
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
 
-    implementation (libs.androidx.viewpager2)
-
+    implementation(libs.androidx.viewpager2)
 
     // Lottie
-    implementation (libs.lottie.compose)
+    implementation(libs.lottie.compose)
+
+    implementation(libs.accompanist.permissions)
+
+    implementation(libs.compose.charts)
 
 
-    implementation (libs.accompanist.permissions)
-
-    implementation (libs.compose.charts)
-
+    //    implementation(libs.androidx.navigation.fragment.ktx)
+//    implementation(libs.androidx.navigation.ui.ktx)
+//
+//    // Testing Navigation
+//    androidTestImplementation(libs.androidx.navigation.testing)
+//    implementation(libs.rxjava)
+//    implementation(libs.rxandroid)
+    //kapt(libs.hilt.android.compiler)
 
 }
 

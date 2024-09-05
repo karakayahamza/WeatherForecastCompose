@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -17,7 +16,6 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -54,7 +52,7 @@ fun MainTopAppBar(
     var showDialog by remember { mutableStateOf(false) }
 
     CenterAlignedTopAppBar(
-        colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = backgroundColor),
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = backgroundColor),
         title = {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -95,7 +93,6 @@ fun MainTopAppBar(
     CustomAlertDialog(
         showDialog = showDialog,
         onDismissRequest = { showDialog = false },
-        onConfirmation = { /* Handle confirmation */ },
         dialogTitle = "Rüzgar Yönleri",
         dialogText = "K: Kuzey\nKD: Kuzeydoğu\nD: Doğu\nGD: Güneydoğu\nG: Güney\nGB: Güneybatı\nB: Batı\nKB: Kuzeybatı",
         icon = Icons.Default.Info
@@ -103,68 +100,69 @@ fun MainTopAppBar(
 }
 
 
+@Composable
+fun CustomAlertDialog(
+    showDialog: Boolean,
+    onDismissRequest: () -> Unit,
 
-    @Composable
-    fun CustomAlertDialog(
-        showDialog: Boolean,
-        onDismissRequest: () -> Unit,
-        onConfirmation: () -> Unit,
-        dialogTitle: String,
-        dialogText: String,
-        icon: ImageVector
-    ) {
-        if (showDialog) {
-            Dialog(onDismissRequest = { onDismissRequest() }) {
+    dialogTitle: String,
+    dialogText: String,
+    icon: ImageVector
+) {
+    if (showDialog) {
+        Dialog(onDismissRequest = { onDismissRequest() }) {
+            Box(
+                modifier = Modifier
+                    .background(Color.Transparent)
+            ) {
                 Box(
                     modifier = Modifier
-                        .background(Color.Transparent)
-) {
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.Center)
-                            .background(MaterialTheme.colorScheme.background, RoundedCornerShape(20.dp))
-                            .padding(16.dp)
-                    ) {
-                        Column {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(bottom = 8.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center
-                            ) {
-                                Icon(
-                                    icon,
-                                    contentDescription = "Example Icon",
-                                    tint = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.size(24.dp)
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(
-                                    text = dialogTitle,
-                                    style = MaterialTheme.typography.titleMedium,
-                                    color = MaterialTheme.colorScheme.onBackground
-                                )
-                            }
+                        .align(Alignment.Center)
+                        .background(MaterialTheme.colorScheme.background, RoundedCornerShape(20.dp))
+                        .padding(16.dp)
+                ) {
+                    Column {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                icon,
+                                contentDescription = "Example Icon",
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(24.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                text = dialogText,
-                                style = MaterialTheme.typography.bodyMedium,
+                                text = dialogTitle,
+                                style = MaterialTheme.typography.titleMedium,
                                 color = MaterialTheme.colorScheme.onBackground
                             )
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 8.dp),
-                                horizontalArrangement = Arrangement.End
-                            ) {
-                                TextButton(
-                                    onClick = {
-                                        onDismissRequest()
-                                    }
-                                ) {
-                                    Text("Tamam", color = MaterialTheme.colorScheme.primary) // Dismiss buton rengi
+                        }
+                        Text(
+                            text = dialogText,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 8.dp),
+                            horizontalArrangement = Arrangement.End
+                        ) {
+                            TextButton(
+                                onClick = {
+                                    onDismissRequest()
                                 }
+                            ) {
+                                Text(
+                                    "Tamam",
+                                    color = MaterialTheme.colorScheme.primary
+                                ) // Dismiss buton rengi
                             }
                         }
                     }
@@ -172,3 +170,4 @@ fun MainTopAppBar(
             }
         }
     }
+}

@@ -12,7 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.weatherforecastcompose.model.WeatherModel.Root
-import com.example.weatherforecastcompose.utils.DateUtils.formatDate
+import com.example.weatherforecastcompose.utils.WeatherUtils
 
 @Composable
 fun WeatherHourlyDetailsCard(forecast: List<Root>) {
@@ -24,7 +24,7 @@ fun WeatherHourlyDetailsCard(forecast: List<Root>) {
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         items(forecast.slice(1..5)) { weather ->
-            val (date) = formatDate(weather.dt_txt)
+            val (date) = WeatherUtils.formatDate(weather.dt_txt)
             ExpandableCard(date = date, weather = weather)
             Spacer(modifier = Modifier.size(2.dp))
         }

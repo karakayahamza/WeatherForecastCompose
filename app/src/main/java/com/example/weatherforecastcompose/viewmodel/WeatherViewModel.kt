@@ -1,4 +1,3 @@
-// WeatherViewModel.kt
 package com.example.weatherforecastcompose.viewmodel
 
 import android.content.Context
@@ -8,7 +7,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.weatherforecastcompose.model.WeatherModel.CityList
 import com.example.weatherforecastcompose.model.WeatherModel.WeatherModel
-import com.example.weatherforecastcompose.repository.CurrentWeatherRepository
 import com.example.weatherforecastcompose.repository.WeatherRepository
 import com.example.weatherforecastcompose.utils.Resource
 import com.google.gson.Gson
@@ -21,10 +19,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WeatherViewModel @Inject constructor(
-    private val repository: WeatherRepository,
-    private val currentRepository: CurrentWeatherRepository
+    private val repository: WeatherRepository
 ) : ViewModel() {
-
 
     private val _weatherData = mutableStateMapOf<String, WeatherModel?>()
     val weatherData: Map<String, WeatherModel?> get() = _weatherData
@@ -38,11 +34,10 @@ class WeatherViewModel @Inject constructor(
     private val _currentWeatherData = mutableStateOf<WeatherModel?>(null)
     val currentWeatherData: WeatherModel? get() = _currentWeatherData.value
 
-
     fun loadWeather(cityName: String) {
         viewModelScope.launch(Dispatchers.IO) {
             _isLoading[cityName] = true
-            when (val result = repository.getWeatherList(cityName)) {
+            when (val result = repository.getWeatherListByCity(cityName)) {
                 is Resource.Success -> {
                     _weatherData[cityName] = result.data
                     _errorMessages[cityName] = ""
@@ -52,30 +47,34 @@ class WeatherViewModel @Inject constructor(
                     _errorMessages[cityName] = result.message ?: "Unknown error"
                 }
 
-                else -> {}
+                is Resource.Loading -> TODO()
             }
             _isLoading[cityName] = false
         }
     }
 
-
     fun loadCurrentWeather(lat: String, lon: String) {
-        viewModelScope.launch {
-            when (val result = currentRepository.getCurrentWeatherList(lat, lon)) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _isLoading["currentWeather"] = true
+
+            when (val result = repository.getWeatherListByCoordinates(lat, lon)) {
+                is Resource.Loading -> {
+                    _isLoading["currentWeather"] = true
+                }
+
                 is Resource.Success -> {
                     _currentWeatherData.value = result.data
+                    _isLoading["currentWeather"] = false
                 }
 
                 is Resource.Error -> {
                     println(result.message ?: "Unknown error")
-                }
-
-                else -> {
-                    println("An error occurred.")
+                    _isLoading["currentWeather"] = false
                 }
             }
         }
     }
+
 
     fun getDistrictNames(context: Context): List<String> {
         val jsonFileString = getJsonDataFromAsset(context, "city_list.json")

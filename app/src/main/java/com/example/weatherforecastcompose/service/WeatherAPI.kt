@@ -5,19 +5,25 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface WeatherAPI {
-    @GET("forecast?&lang=tr")
-    suspend fun getData(
-        @Query("q") name: String?,
-        @Query("APPID") appId: String?,
-        @Query("units") units: String?
-    ): WeatherModel
-}
+    companion object {
+        const val DEFAULT_LANG = "tr"
+        const val DEFAULT_UNITS = "metric"
+    }
 
-interface WeatherAPICurrentLocation {
-    @GET("forecast?&lang=tr&units=metric")
-    suspend fun getCurrentData(
-        @Query("lat") lat: String?,
-        @Query("lon") lon: String?,
-        @Query("APPID") appId: String?
+    @GET("forecast")
+    suspend fun getDataByCity(
+        @Query("q") cityName: String,
+        @Query("APPID") appId: String,
+        @Query("units") units: String = DEFAULT_UNITS,
+        @Query("lang") lang: String = DEFAULT_LANG
+    ): WeatherModel
+
+    @GET("forecast")
+    suspend fun getDataByCoordinates(
+        @Query("lat") latitude: String,
+        @Query("lon") longitude: String,
+        @Query("APPID") appId: String,
+        @Query("units") units: String = DEFAULT_UNITS,
+        @Query("lang") lang: String = DEFAULT_LANG
     ): WeatherModel
 }

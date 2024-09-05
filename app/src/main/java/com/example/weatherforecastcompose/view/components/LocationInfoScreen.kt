@@ -13,7 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.core.app.ActivityCompat
-import com.example.weatherforecastcompose.utils.distanceBetween
+import com.example.weatherforecastcompose.utils.WeatherUtils
 import com.example.weatherforecastcompose.viewmodel.WeatherViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
@@ -98,7 +98,7 @@ fun LocationInfoScreen(
             val (lat, lon) = it.latitude to it.longitude
             val newPlace = lat to lon
 
-            if (currentPlace.value == null || distanceBetween(
+            if (currentPlace.value == null || WeatherUtils.distanceBetween(
                     currentPlace.value!!,
                     newPlace
                 ) > 100
