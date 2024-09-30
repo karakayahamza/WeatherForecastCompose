@@ -50,7 +50,6 @@ android {
         }
     }
 }
-val nav_version = "2.7.7"
 dependencies {
 
     implementation(libs.androidx.core.ktx)
@@ -61,7 +60,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-//    implementation(libs.androidx.foundation.desktop)
+    androidTestImplementation (libs.ui.test.junit4)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -96,10 +95,14 @@ dependencies {
 
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
+    implementation(kotlin("script-runtime"))
 
-}
+    implementation (libs.androidx.preference.ktx)
 
-// Allow references to generated code
-kapt {
-    correctErrorTypes = true
+    implementation (libs.accompanist.pager)
+
+    implementation ("androidx.compose.material3:material3:1.1.1")
+
+    //Lottie
+    implementation(libs.lottie.compose)
 }
