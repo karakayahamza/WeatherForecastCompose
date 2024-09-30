@@ -49,14 +49,12 @@ class AppModule {
         return PreferenceManager.getDefaultSharedPreferences(context)
     }
 
-    // Provide SharedPreferencesDataSource
     @Provides
     @Singleton
     fun provideSharedPreferencesDataSource(sharedPreferences: SharedPreferences): SharedPreferencesDataSource {
         return SharedPreferencesDataSource(sharedPreferences)
     }
 
-    // Provide PreferencesRepository
     @Provides
     @Singleton
     fun providePreferencesRepository(dataSource: SharedPreferencesDataSource): PreferencesRepository {

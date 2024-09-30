@@ -6,10 +6,10 @@ import com.example.weatherforecastcompose.util.JsonParser
 import javax.inject.Inject
 
 class CityRepositoryImpl @Inject constructor(
-    private val jsonParser: JsonParser // Replace with your JSON parsing logic
+    private val jsonParser: JsonParser
 ) : CityRepository {
     override fun getCities(): List<CityFromJson> {
         val jsonString = jsonParser.loadJsonFromAsset("cities.json")
-        return jsonParser.parseCities(jsonString) // Implement this method
+        return jsonParser.parseCities(jsonString)
     }
 }

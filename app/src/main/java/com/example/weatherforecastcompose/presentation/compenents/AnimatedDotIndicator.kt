@@ -36,9 +36,9 @@ fun AnimatedDotIndicator(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp), // Optional padding to ensure spacing from edges
+            .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center // Center the dots within the Row
+        horizontalArrangement = Arrangement.Center
     ) {
         repeat(pagerState.pageCount) { pageIndex ->
             val isSelected = pageIndex == pagerState.currentPage
@@ -53,10 +53,10 @@ fun AnimatedDotIndicator(
 
             if (currentPlace != null && pageIndex == 0) {
                 Image(
-                    painter = painterResource(id = R.drawable.ic_launcher_background),//navigation icon
+                    painter = painterResource(id = R.drawable.ic_launcher_background),
                     contentDescription = "Current Location",
                     modifier = Modifier
-                        .size(18.dp) // Fixed size for the icon
+                        .size(18.dp)
                         .graphicsLayer(
                             scaleX = scale,
                             scaleY = scale
@@ -79,7 +79,6 @@ fun AnimatedDotIndicator(
                         )
                 )
             }
-
             Spacer(modifier = Modifier.width(5.dp))
         }
     }

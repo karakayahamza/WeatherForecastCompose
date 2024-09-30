@@ -10,7 +10,7 @@ class GetCitiesUseCase @Inject constructor(
     private val cityRepository: CityRepository
 ) {
     fun executeGetCities(): Flow<List<CityFromJson>> = flow {
-        val cities = cityRepository.getCities() // Assuming this fetches from JSON
-        emit(cities) // Emit the list of cities
+        val cities = cityRepository.getCities()
+        emit(cities)
     }
 }

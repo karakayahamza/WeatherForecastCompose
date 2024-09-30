@@ -30,7 +30,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
@@ -45,8 +44,12 @@ fun DrawerContent(
     viewModel: WeatherViewModel = hiltViewModel(),
     onDrawerClosed: @Composable () -> Unit
 ) {
-    // State to manage the search query locally
     var searchQuery by remember { mutableStateOf("") }
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp.dp
+    val selectedCities by viewModel.selectedCities.collectAsState()
+    val cityList by viewModel.cityNames.collectAsState()
+
 
     LaunchedEffect(drawerState.isClosed) {
         if (drawerState.isClosed) {
@@ -58,19 +61,12 @@ fun DrawerContent(
         onDrawerClosed()
     }
 
-    val configuration = LocalConfiguration.current
-    val screenWidth = configuration.screenWidthDp.dp
-    val selectedCities by viewModel.selectedCities.collectAsState()
-    val cityList by viewModel.cityNames.collectAsState()
-
     ModalDrawerSheet(
         modifier = Modifier
             .widthIn(min = 280.dp, max = screenWidth * 0.8f)
             .fillMaxHeight(),
         drawerContainerColor = MaterialTheme.colorScheme.background.copy(alpha = 0.9f)
     ) {
-        Spacer(modifier = Modifier.height(16.dp))
-
         val keyboardController = LocalSoftwareKeyboardController.current
         OutlinedTextField(
             value = searchQuery,
@@ -78,7 +74,7 @@ fun DrawerContent(
             placeholder = { Text("Ara..") },
             modifier = Modifier
                 .fillMaxWidth(0.9f)
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+                .padding(horizontal = 16.dp),
             textStyle = MaterialTheme.typography.bodyLarge,
             singleLine = true,
             leadingIcon = {
@@ -98,9 +94,9 @@ fun DrawerContent(
 
 
         if (searchQuery.isBlank()) {
-            // Display selected cities when search query is empty
             if (selectedCities.isNotEmpty()) {
                 Text(
+                    color = MaterialTheme.colorScheme.primary,
                     text = "Selected Cities",
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
@@ -109,7 +105,7 @@ fun DrawerContent(
                 LazyColumn(
                     modifier = Modifier.fillMaxWidth(0.9f)
                 ) {
-                    items(selectedCities.toList()) { cityName -> // Convert Set to List
+                    items(selectedCities.toList()) { cityName ->
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -123,7 +119,7 @@ fun DrawerContent(
                                         viewModel.toggleCitySelection(
                                             cityName,
                                             false
-                                        ) // Unselect city
+                                        )
                                     }
                                 }
                             )
@@ -131,7 +127,8 @@ fun DrawerContent(
                                 text = cityName,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(start = 8.dp)
+                                    .padding(start = 8.dp),
+                                color = MaterialTheme.colorScheme.primary
                             )
                         }
                     }
@@ -140,21 +137,21 @@ fun DrawerContent(
                 Text(
                     text = "No selected cities.",
                     modifier = Modifier.padding(16.dp),
-                    color = Color.Gray
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
         } else {
-            // Search results logic
             val filteredCities = cityList.filter { cityFromJson ->
                 cityFromJson.city.contains(searchQuery, ignoreCase = true) &&
-                        !selectedCities.contains(cityFromJson.city) // Exclude selected cities
+                        !selectedCities.contains(cityFromJson.city)
             }
 
             if (filteredCities.isNotEmpty()) {
                 Text(
                     text = "Search Results",
                     style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
+                    modifier = Modifier.padding(start = 16.dp, bottom = 8.dp),
+                    color = MaterialTheme.colorScheme.primary
                 )
                 LazyColumn(
                     modifier = Modifier.fillMaxWidth(0.9f)
@@ -167,13 +164,13 @@ fun DrawerContent(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Checkbox(
-                                checked = false, // Since these are unselected cities
+                                checked = false,
                                 onCheckedChange = { isChecked ->
                                     if (isChecked) {
                                         viewModel.toggleCitySelection(
                                             cityFromJson.city,
                                             true
-                                        ) // Select city
+                                        )
                                         viewModel.addCity(cityFromJson.city)
                                         searchQuery = ""
                                     }
@@ -183,7 +180,8 @@ fun DrawerContent(
                                 text = cityFromJson.city,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(start = 8.dp)
+                                    .padding(start = 8.dp),
+                                color = MaterialTheme.colorScheme.primary
                             )
                         }
                     }
@@ -192,7 +190,7 @@ fun DrawerContent(
                 Text(
                     text = "No cities found",
                     modifier = Modifier.padding(16.dp),
-                    color = Color.Gray
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
         }

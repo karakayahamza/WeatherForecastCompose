@@ -17,8 +17,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.weatherforecastcompose.presentation.compenents.DrawerContent
 import com.example.weatherforecastcompose.presentation.compenents.MainTopAppBar
 import com.example.weatherforecastcompose.presentation.screens.MainScreen
-import com.example.weatherforecastcompose.presentation.ui.theme.WeatherForecastComposeTheme
 import com.example.weatherforecastcompose.presentation.weather.WeatherViewModel
+import com.example.weatherforecastcompose.presentation.ui.theme.WeatherForecastComposeTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -34,33 +34,36 @@ class MainActivity : ComponentActivity() {
                 val pagerState = rememberPagerState(pageCount = { cities.size })
                 val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
-                ModalNavigationDrawer(
-                    drawerState = drawerState,
-                    drawerContent = {
-                        DrawerContent(
-                            drawerState,
-                            viewModel,
-                            onDrawerClosed = { /* Handle when drawer is closed */ })
+
+                Scaffold(
+                    topBar = {
+                        MainTopAppBar(
+                            pagerState = pagerState,
+                            drawerState = drawerState,
+                            backgroundColor = Color.Transparent,
+                            currentPlace = null
+                        )
                     }
-                ) {
-                    Scaffold(
-                        topBar = {
-                            MainTopAppBar(
-                                pagerState = pagerState,
-                                drawerState = drawerState,
-                                backgroundColor = Color.White,
-                                currentPlace = null
-                            )
+                ) { innerPadding ->
+                    ModalNavigationDrawer(
+                        modifier = Modifier.padding(innerPadding),
+                        drawerState = drawerState,
+                        drawerContent = {
+                            DrawerContent(
+                                drawerState,
+                                viewModel,
+                                onDrawerClosed = { /* -_- */ })
                         }
-                    ) { innerPadding ->
+                    ) {
                         MainScreen(
-                            modifier = Modifier.padding(innerPadding),
                             viewModel = viewModel,
                             pagerState = pagerState,
                             cities = cities
                         )
                     }
+
                 }
+
             }
         }
     }

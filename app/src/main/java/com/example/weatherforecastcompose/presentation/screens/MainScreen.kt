@@ -14,12 +14,11 @@ import com.example.weatherforecastcompose.presentation.weather.WeatherViewModel
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MainScreen(
-    modifier: Modifier = Modifier,
     viewModel: WeatherViewModel,
     pagerState: PagerState,
     cities: List<String>
 ) {
-    Column(modifier = modifier.fillMaxSize()) {
+    Column(modifier = Modifier.fillMaxSize()) {
         if (viewModel.weatherStates.isEmpty()) {
             Text("Henüz şehir eklenmedi")
         } else {

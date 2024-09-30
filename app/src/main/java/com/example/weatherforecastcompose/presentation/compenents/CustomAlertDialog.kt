@@ -86,7 +86,7 @@ fun CustomAlertDialog(
                                 Text(
                                     "Tamam",
                                     color = MaterialTheme.colorScheme.primary
-                                ) // Dismiss buton rengi
+                                )
                             }
                         }
                     }

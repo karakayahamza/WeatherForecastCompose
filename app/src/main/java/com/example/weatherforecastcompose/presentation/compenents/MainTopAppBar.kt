@@ -31,10 +31,10 @@ import kotlinx.coroutines.launch
 fun MainTopAppBar(
     pagerState: PagerState,
     drawerState: DrawerState,
-    backgroundColor: Color = MaterialTheme.colorScheme.primary,
+    backgroundColor: Color = MaterialTheme.colorScheme.onPrimary,
     currentPlace: Pair<Double, Double>?
 ) {
-    val scope = rememberCoroutineScope() // Define scope here
+    val scope = rememberCoroutineScope()
     var showDialog by remember { mutableStateOf(false) }
 
     CenterAlignedTopAppBar(

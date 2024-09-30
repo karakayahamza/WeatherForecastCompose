@@ -13,7 +13,6 @@ data class WeatherResources(
     val windResource: Painter,
     val pressureResource: Painter
 ) {
-
     companion object {
         @Composable
         fun getWeatherResources(): WeatherResources {

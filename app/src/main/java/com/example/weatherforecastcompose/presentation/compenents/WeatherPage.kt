@@ -41,13 +41,17 @@ fun WeatherPage(weatherState: WeatherState) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(16.dp),
+        verticalArrangement = Arrangement.SpaceEvenly,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         WeatherMainCard(
-            city = weatherState.weather.cityName, currentTemp = 1.2, weatherState = weatherState
+            city = weatherState.weather.cityName,
+            currentTemp = weatherState.weather.weatherDetails[0].temperature,
+            weatherState = weatherState
         )
         Spacer(modifier = Modifier.height(16.dp))
-        WeatherDetailsCard(
+        WeatherMetrics(
             humidityResource = WeatherResources.getWeatherResources().humidityResource,
             windResource = WeatherResources.getWeatherResources().windResource,
             pressureResource = WeatherResources.getWeatherResources().pressureResource,
@@ -90,7 +94,7 @@ fun WeatherMainCard(
 
             Text(
                 text = WeatherUtils.formatDate(
-                    weatherState.weather.weatherDetails[0].dateTime ?: "-"
+                    weatherState.weather.weatherDetails[0].dateTime
                 ).first,
                 fontSize = 12.sp,
                 modifier = Modifier.fillMaxWidth(),
@@ -120,7 +124,7 @@ fun WeatherMainCard(
 
 
             Text(
-                text = "Hissedilen: ${weatherState.weather.weatherDetails.get(0)?.feelsLike} °C",
+                text = "Hissedilen: ${weatherState.weather.weatherDetails[0].feelsLike} °C",
                 fontSize = 12.sp,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -154,7 +158,7 @@ fun TemperatureInfo(currentTemp: Double) {
 
 
 @Composable
-fun WeatherDetailsCard(
+fun WeatherMetrics(
     humidityResource: Painter,
     windResource: Painter,
     pressureResource: Painter,
