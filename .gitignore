@@ -13,4 +13,4 @@
 .externalNativeBuild
 .cxx
 local.properties
-E:\CurrentAndroidProject\WeatherForecastCompose\app\src\main\java\com\example\weatherforecastcompose\util\Constants.kt
+/app/src/main/java/com/example/weatherforecastcompose/util/Constants.kt
