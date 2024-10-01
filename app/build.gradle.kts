@@ -60,6 +60,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.play.services.location)
     androidTestImplementation (libs.ui.test.junit4)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -106,4 +107,9 @@ dependencies {
 
     //Lottie
     implementation(libs.lottie.compose)
+
+    implementation ("com.google.accompanist:accompanist-permissions:0.36.0")
+    implementation ("com.google.android.gms:play-services-location:21.0.1")
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.6.0")
+
 }

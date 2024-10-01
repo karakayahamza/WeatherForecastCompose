@@ -31,6 +31,7 @@ uiTestJunit4 = "1.7.2"
 workRuntimeKtx = "2.9.0"
 workRuntimeKtxVersion = "2.9.0"
 foundationDesktop = "1.6.8"
+playServicesLocation = "21.3.0"
 
 [libraries]
 accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanistPager" }
@@ -69,6 +70,7 @@ rxandroid = { module = "io.reactivex.rxjava2:rxandroid", version.ref = "rxandroi
 rxjava = { module = "io.reactivex.rxjava2:rxjava", version.ref = "rxjava" }
 lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "lottieCompose" }
 ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "uiTestJunit4" }
+play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

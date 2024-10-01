@@ -40,8 +40,7 @@ import com.example.weatherforecastcompose.util.WeatherUtils
 fun WeatherPage(weatherState: WeatherState) {
     Column(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
+            .fillMaxSize(),
         verticalArrangement = Arrangement.SpaceEvenly,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

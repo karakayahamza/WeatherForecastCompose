@@ -9,4 +9,8 @@ class WeatherRepositoryImpl @Inject constructor(private val api: WeatherAPI) : W
     override suspend fun getWeatherDetails(placeName: String): WeatherDto {
         return api.getData(placeName)
     }
+
+    override suspend fun getWeatherDetailsWithLocation(lat: Double, lon: Double): WeatherDto {
+        return api.getDataWithLocation(lat, lon)
+    }
 }

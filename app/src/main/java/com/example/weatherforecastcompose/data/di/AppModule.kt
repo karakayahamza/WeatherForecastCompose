@@ -13,6 +13,8 @@ import com.example.weatherforecastcompose.domain.repository.PreferencesRepositor
 import com.example.weatherforecastcompose.domain.repository.WeatherRepository
 import com.example.weatherforecastcompose.util.Constants.BASE_URL
 import com.example.weatherforecastcompose.util.JsonParser
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -25,51 +27,59 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-class AppModule {
+abstract class AppModule {
 
-    @Singleton
-    @Provides
-    fun provideWeatherRepository(api: WeatherAPI): WeatherRepository {
-        return WeatherRepositoryImpl(api)
+
+    companion object {
+
+        @Provides
+        @Singleton
+        fun provideApplicationContext(@ApplicationContext context: Context): Context {
+            return context
+        }
+
+        @Provides
+        @Singleton
+        fun provideWeatherRepository(api: WeatherAPI): WeatherRepository {
+            return WeatherRepositoryImpl(api)
+        }
+
+        @Provides
+        @Singleton
+        fun provideWeatherApi(): WeatherAPI {
+            return Retrofit.Builder()
+                .addConverterFactory(GsonConverterFactory.create())
+                .baseUrl(BASE_URL) // Make sure BASE_URL is defined correctly
+                .build()
+                .create(WeatherAPI::class.java)
+        }
+
+        @Provides
+        @Singleton
+        fun provideSharedPreferences(@ApplicationContext context: Context): SharedPreferences {
+            return PreferenceManager.getDefaultSharedPreferences(context)
+        }
+
+        @Provides
+        @Singleton
+        fun provideSharedPreferencesDataSource(sharedPreferences: SharedPreferences): SharedPreferencesDataSource {
+            return SharedPreferencesDataSource(sharedPreferences)
+        }
+
+        @Provides
+        @Singleton
+        fun providePreferencesRepository(dataSource: SharedPreferencesDataSource): PreferencesRepository {
+            return PreferencesRepositoryImpl(dataSource)
+        }
+
+        @Provides
+        fun provideJsonParser(@ApplicationContext context: Context): JsonParser {
+            return JsonParser(context)
+        }
+
+        @Provides
+        fun provideCityRepository(jsonParser: JsonParser): CityRepository {
+            return CityRepositoryImpl(jsonParser)
+        }
     }
-
-    @Singleton
-    @Provides
-    fun provideCryptoApi(): WeatherAPI {
-        return Retrofit.Builder()
-            .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl(BASE_URL)
-            .build()
-            .create(WeatherAPI::class.java)
-    }
-
-    @Provides
-    @Singleton
-    fun provideSharedPreferences(@ApplicationContext context: Context): SharedPreferences {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-    }
-
-    @Provides
-    @Singleton
-    fun provideSharedPreferencesDataSource(sharedPreferences: SharedPreferences): SharedPreferencesDataSource {
-        return SharedPreferencesDataSource(sharedPreferences)
-    }
-
-    @Provides
-    @Singleton
-    fun providePreferencesRepository(dataSource: SharedPreferencesDataSource): PreferencesRepository {
-        return PreferencesRepositoryImpl(dataSource)
-    }
-
-
-    @Provides
-    fun provideJsonParser(@ApplicationContext context: Context): JsonParser {
-        return JsonParser(context)
-    }
-
-    @Provides
-    fun provideCityRepository(jsonParser: JsonParser): CityRepository {
-        return CityRepositoryImpl(jsonParser)
-    }
-
 }

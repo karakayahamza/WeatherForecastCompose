@@ -53,7 +53,7 @@ fun AnimatedDotIndicator(
 
             if (currentPlace != null && pageIndex == 0) {
                 Image(
-                    painter = painterResource(id = R.drawable.ic_launcher_background),
+                    painter = painterResource(id = R.drawable.navigation),
                     contentDescription = "Current Location",
                     modifier = Modifier
                         .size(18.dp)

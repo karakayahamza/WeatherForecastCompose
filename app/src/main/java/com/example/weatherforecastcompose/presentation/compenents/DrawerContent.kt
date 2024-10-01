@@ -49,11 +49,12 @@ fun DrawerContent(
     val screenWidth = configuration.screenWidthDp.dp
     val selectedCities by viewModel.selectedCities.collectAsState()
     val cityList by viewModel.cityNames.collectAsState()
-
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     LaunchedEffect(drawerState.isClosed) {
         if (drawerState.isClosed) {
             searchQuery = ""
+            keyboardController?.hide()
         }
     }
 
@@ -97,7 +98,7 @@ fun DrawerContent(
             if (selectedCities.isNotEmpty()) {
                 Text(
                     color = MaterialTheme.colorScheme.primary,
-                    text = "Selected Cities",
+                    text = "Seçili Konumlar",
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
                 )
@@ -135,7 +136,7 @@ fun DrawerContent(
                 }
             } else {
                 Text(
-                    text = "No selected cities.",
+                    text = "Seçilmiş bir konum bulunmamakta.",
                     modifier = Modifier.padding(16.dp),
                     color = MaterialTheme.colorScheme.primary
                 )
@@ -148,7 +149,7 @@ fun DrawerContent(
 
             if (filteredCities.isNotEmpty()) {
                 Text(
-                    text = "Search Results",
+                    text = "Arama Sonuçları",
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.padding(start = 16.dp, bottom = 8.dp),
                     color = MaterialTheme.colorScheme.primary
@@ -188,7 +189,7 @@ fun DrawerContent(
                 }
             } else {
                 Text(
-                    text = "No cities found",
+                    text = "Konum Bulunamadı!",
                     modifier = Modifier.padding(16.dp),
                     color = MaterialTheme.colorScheme.primary
                 )
