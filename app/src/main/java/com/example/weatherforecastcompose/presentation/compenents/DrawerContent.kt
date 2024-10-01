@@ -195,15 +195,5 @@ fun DrawerContent(
                 )
             }
         }
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        Text(
-            text = "Created by hkarakaya",
-            modifier = Modifier
-                .padding(16.dp)
-                .wrapContentWidth(),
-            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
-        )
     }
 }

@@ -62,7 +62,7 @@ class MainActivity : ComponentActivity() {
                         pagerState = pagerState,
                         drawerState = drawerState,
                         backgroundColor = Color.Transparent,
-                        currentPlace = null
+                        currentPlace = currentPlace.value
                     )
                 }) { innerPadding ->
                     ModalNavigationDrawer(modifier = Modifier.padding(innerPadding),

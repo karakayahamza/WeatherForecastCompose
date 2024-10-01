@@ -103,13 +103,13 @@ dependencies {
 
     implementation (libs.accompanist.pager)
 
-    implementation ("androidx.compose.material3:material3:1.1.1")
+    implementation (libs.material3)
 
     //Lottie
     implementation(libs.lottie.compose)
 
-    implementation ("com.google.accompanist:accompanist-permissions:0.36.0")
-    implementation ("com.google.android.gms:play-services-location:21.0.1")
-    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.6.0")
+    implementation (libs.accompanist.permissions)
+    implementation (libs.play.services.location.v2101)
+    implementation (libs.kotlinx.coroutines.play.services)
 
 }
