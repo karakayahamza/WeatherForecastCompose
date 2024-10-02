@@ -12,7 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
-import androidx.core.view.WindowCompat.getInsetsController
+import androidx.core.view.WindowCompat
 
 private val lightScheme = lightColorScheme(
     primary = primaryLight,
@@ -244,16 +244,18 @@ private val highContrastDarkColorScheme = darkColorScheme(
 
 @Immutable
 data class ColorFamily(
-    val color: Color, val onColor: Color, val colorContainer: Color, val onColorContainer: Color
+    val color: Color,
+    val onColor: Color,
+    val colorContainer: Color,
+    val onColorContainer: Color
 )
 
-val unspecified_scheme = ColorFamily(
-    Color.Unspecified, Color.Unspecified, Color.Unspecified, Color.Unspecified
-)
+
 
 @Composable
 fun WeatherForecastComposeTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable() () -> Unit
+    darkTheme: Boolean = isSystemInDarkTheme(),
+    content: @Composable() () -> Unit
 ) {
     val colorScheme = when {
         darkTheme -> darkScheme
@@ -262,19 +264,17 @@ fun WeatherForecastComposeTheme(
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
-            val activity = view.context as Activity
-            activity.window.navigationBarColor =
-                colorScheme.primary.copy(alpha = 0.08f).compositeOver(colorScheme.surface.copy())
-                    .toArgb()
+            val activity  = view.context as Activity
+            activity.window.navigationBarColor = colorScheme.primary.copy(alpha = 0.08f).compositeOver(colorScheme.surface.copy()).toArgb()
             activity.window.statusBarColor = colorScheme.background.toArgb()
-            getInsetsController(activity.window, view).isAppearanceLightStatusBars = !darkTheme
-            getInsetsController(
-                activity.window, view
-            ).isAppearanceLightNavigationBars = !darkTheme
+            WindowCompat.getInsetsController(activity.window, view).isAppearanceLightStatusBars = !darkTheme
+            WindowCompat.getInsetsController(activity.window, view).isAppearanceLightNavigationBars = !darkTheme
         }
     }
 
     MaterialTheme(
-        colorScheme = colorScheme, typography = AppTypography, content = content
+        colorScheme = colorScheme,
+        typography = AppTypography,
+        content = content
     )
 }

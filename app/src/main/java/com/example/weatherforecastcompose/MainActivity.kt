@@ -20,9 +20,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.core.app.ActivityCompat
@@ -52,7 +51,7 @@ class MainActivity : ComponentActivity() {
             val cities = viewModel.cities
             val pagerState = rememberPagerState(pageCount = { cities.size })
             val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-            val currentPlace = remember { mutableStateOf<Pair<Double, Double>?>(null) }
+            val currentPlace = viewModel.currentPlace.collectAsState()
 
             LocationInfoScreen(this, viewModel, currentPlace)
 
@@ -93,17 +92,15 @@ fun RequestLocationPermission(context: Context, onLocationRetrieved: (Location?)
 
     val locationClient = LocationServices.getFusedLocationProviderClient(context)
 
-
     LaunchedEffect(Unit) {
         permissionState.launchMultiplePermissionRequest()
     }
 
     if (permissionState.allPermissionsGranted) {
-        // Set a longer interval and minimum movement threshold for location updates
         val locationRequest =
-            LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 60000L) // 60 seconds
-                .setMinUpdateIntervalMillis(30000L) // 30 seconds
-                .setMaxUpdateDelayMillis(60000L) // 60 seconds
+            LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 60000L)
+                .setMinUpdateIntervalMillis(30000L)
+                .setMaxUpdateDelayMillis(60000L)
                 .setMinUpdateDistanceMeters(10f).build()
 
         val locationCallback = object : LocationCallback() {
@@ -142,30 +139,27 @@ fun RequestLocationPermission(context: Context, onLocationRetrieved: (Location?)
     }
 }
 
+
 @Composable
 fun LocationInfoScreen(
-    context: Context, viewModel: WeatherViewModel, currentPlace: MutableState<Pair<Double, Double>?>
+    context: Context,
+    viewModel: WeatherViewModel,
+    currentPlace: State<Pair<Double, Double>?>
 ) {
     RequestLocationPermission(context) { location ->
         location?.let {
-            val (lat, lon) = it.latitude to it.longitude
-            val newPlace = lat to lon
-
-            if (currentPlace.value == null || WeatherUtils.distanceBetween(
-                    currentPlace.value!!, newPlace
-                ) > 100
-            ) {
-                currentPlace.value = newPlace
-                viewModel.getWeatherByLocation(lat, lon)
-            } else {
-                Log.d("LocationScreen", "Location already present: $newPlace")
+            val newPlace = it.latitude to it.longitude
+            currentPlace.value?.let { current ->
+                if (WeatherUtils.distanceBetween(current, newPlace) > 100) {
+                    viewModel.updateCurrentPlace(newPlace)
+                } else {
+                    Log.d("LocationScreen", "Location already present: $newPlace")
+                }
+            } ?: run {
+                viewModel.updateCurrentPlace(newPlace)
             }
         } ?: run {
-            Toast.makeText(
-                context, "GPS kapalı veya konum mevcut değil", Toast.LENGTH_LONG
-            ).show()
+            Toast.makeText(context, "GPS kapalı veya konum mevcut değil", Toast.LENGTH_LONG).show()
         }
     }
 }
-
-

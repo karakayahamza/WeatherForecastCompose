@@ -26,8 +26,7 @@ android {
         release {
             isMinifyEnabled = false
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
         }
     }
@@ -61,7 +60,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.play.services.location)
-    androidTestImplementation (libs.ui.test.junit4)
+    androidTestImplementation(libs.ui.test.junit4)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -99,17 +98,16 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(kotlin("script-runtime"))
 
-    implementation (libs.androidx.preference.ktx)
+    implementation(libs.androidx.preference.ktx)
 
-    implementation (libs.accompanist.pager)
+    implementation(libs.accompanist.pager)
 
-    implementation (libs.material3)
 
     //Lottie
     implementation(libs.lottie.compose)
 
-    implementation (libs.accompanist.permissions)
-    implementation (libs.play.services.location.v2101)
-    implementation (libs.kotlinx.coroutines.play.services)
+    implementation(libs.accompanist.permissions)
+    implementation(libs.play.services.location.v2101)
+    implementation(libs.kotlinx.coroutines.play.services)
 
 }

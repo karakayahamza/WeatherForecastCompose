@@ -25,7 +25,7 @@
         <activity
             android:name=".SplashScreenActivity"
             android:exported="true"
-            android:label="@string/app_name"
+            android:label="@string/title_activity_splash_screen"
             android:theme="@style/Theme.SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -37,6 +37,8 @@
             android:name=".MainActivity"
             android:exported="true"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.WeatherForecastCompose" />
+            android:theme="@style/Theme.WeatherForecastCompose"
+            tools:ignore="DiscouragedApi">
+        </activity>
     </application>
 </manifest>
