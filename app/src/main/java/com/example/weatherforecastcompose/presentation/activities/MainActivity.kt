@@ -1,4 +1,4 @@
-package com.example.weatherforecastcompose
+package com.example.weatherforecastcompose.presentation.activities
 
 import android.content.Context
 import android.content.pm.PackageManager
@@ -48,8 +48,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val viewModel: WeatherViewModel = hiltViewModel()
-            val cities = viewModel.cities
-            val pagerState = rememberPagerState(pageCount = { cities.size })
+            val pagerState = rememberPagerState(pageCount = { viewModel.cities.size })
             val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
             val currentPlace = viewModel.currentPlace.collectAsState()
 
@@ -70,7 +69,9 @@ class MainActivity : ComponentActivity() {
                             DrawerContent(drawerState, viewModel, onDrawerClosed = { /* -_- */ })
                         }) {
                         MainScreen(
-                            viewModel = viewModel, pagerState = pagerState, cities = cities
+                            viewModel = viewModel,
+                            pagerState = pagerState,
+                            cities = viewModel.cities
                         )
                     }
                 }

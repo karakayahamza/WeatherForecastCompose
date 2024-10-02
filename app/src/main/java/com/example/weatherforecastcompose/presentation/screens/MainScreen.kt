@@ -1,6 +1,5 @@
 package com.example.weatherforecastcompose.presentation.screens
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,7 +12,6 @@ import com.example.weatherforecastcompose.presentation.compenents.WeatherPager
 import com.example.weatherforecastcompose.presentation.weather.WeatherViewModel
 
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MainScreen(
     viewModel: WeatherViewModel,
